@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_648117_codevault.CONSTANTS</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>Application constants</description>
+        <mobile_callable>false</mobile_callable>
+        <name>CONSTANTS</name>
+        <sandbox_callable>false</sandbox_callable>
+        <script><![CDATA[const CONSTANTS = Class.create();
+
+// Property defaults
+CONSTANTS.ERROR_HANDLER_THROW_ON_ERROR_DEFAULT = false;
+
+// Error messages
+CONSTANTS.INVALID_PARAMS = 'Invalid parameters';
+CONSTANTS.INVALID_ENCODED_QUERY = 'Invalid encoded query';]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-30 22:52:06</sys_created_on>
+        <sys_id>7bb8ba6553f21210829a70c0a0490e83</sys_id>
+        <sys_mod_count>3</sys_mod_count>
+        <sys_name>CONSTANTS</sys_name>
+        <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
+        <sys_update_name>sys_script_include_7bb8ba6553f21210829a70c0a0490e83</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-30 23:04:40</sys_updated_on>
+    </sys_script_include>
+    <sys_es_latest_script action="INSERT_OR_UPDATE">
+        <id>7bb8ba6553f21210829a70c0a0490e83</id>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-30 22:52:06</sys_created_on>
+        <sys_id>4d5932a553f21210829a70c0a0490ed5</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-30 22:52:06</sys_updated_on>
+        <table>sys_script_include</table>
+        <use_es_latest>true</use_es_latest>
+    </sys_es_latest_script>
+</record_update>

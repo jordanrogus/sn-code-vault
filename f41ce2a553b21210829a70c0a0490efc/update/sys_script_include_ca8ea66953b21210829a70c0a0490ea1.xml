@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>public</access>
+        <active>true</active>
+        <api_name>x_648117_codevault.DatabaseHelper</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>Utility functions to simplify and standardize interactions with the ServiceNow database</description>
+        <mobile_callable>false</mobile_callable>
+        <name>DatabaseHelper</name>
+        <sandbox_callable>false</sandbox_callable>
+        <script><![CDATA[const DatabaseHelper = Class.create();
+DatabaseHelper.prototype = {
+    initialize: function() {
+		this.throwOnError = gs.getProperty("x_648117_codevault.error_handling.throw_on_error", CONSTANTS.ERROR_HANDLER_THROW_ON_ERROR_DEFAULT);
+	},
+
+    /**
+     * Retrieves a record from a table as a GlideRecord object
+     * 
+     * @param {string} tableName - Table to query
+     * @param {string} sysId - Record sys_id to query
+     * @returns {?GlideRecord object} - Retrieved record as a GlideRecord object
+     **/
+    fetchGlideRecord: function(tableName, sysId) {
+        if (!gs.tableExists(tableName) || typeof(sysId) !== 'string' || sysId.trim().length === 0) {
+			if (this.throwOnError === true) {throw new Error(CONSTANTS.INVALID_PARAMS);}
+            return null;
+        }
+
+        const recordGr = new GlideRecord(tableName);
+        if (recordGr.get(sysId)) {
+            return recordGr;
+        }
+        return null;
+    },
+
+    /**
+     * Retrieves table records from a query as GlideRecord object(s)
+     * 
+     * @param {string} tableName - Table to query
+     * @param {string} encodedQuery - Encoded query to filter table against
+     * @returns {?GlideRecord Object} - Retrieved record(s) as GlideRecord object(s)
+     **/
+    fetchGlideRecords(tableName, encodedQuery) {
+        if (!gs.tableExists(tableName) || typeof(encodedQuery) !== 'string' || encodedQuery.trim().length === 0) {
+			if (this.throwOnError === true) {throw new Error(CONSTANTS.INVALID_PARAMS);}
+            return null;
+        }
+
+        const recordsGr = new GlideRecord(tableName);
+        if (recordsGr.isEncodedQueryValid(encodedQuery)) {
+            recordsGr.addEncodedQuery(encodedQuery);
+        } else {
+			if (this.throwOnError === true) {throw new Error(CONSTANTS.INVALID_ENCODED_QUERY);}
+            return null;
+        }
+
+        recordsGr.query();
+        if (recordsGr.hasNext()) {
+            return recordsGr;
+        }
+        return null;
+    },
+
+    /**
+     * Checks if records exist in table from a query
+     * 
+     * @param {string} tableName - Table to query
+     * @param {string} encodedQuery - Encoded query to use in check
+     * @returns {?boolean} - If the query against the table returned any records
+     **/
+    checkForRecords: function(tableName, encodedQuery) {
+        if (!gs.tableExists(tableName) || typeof(encodedQuery) !== 'string' || encodedQuery.trim().length === 0) {
+			if (this.throwOnError === true) {throw new Error(CONSTANTS.INVALID_PARAMS);}
+            return null;
+        }
+
+        const recordsGr = new GlideRecord(tableName);
+        if (recordsGr.isEncodedQueryValid(encodedQuery)) {
+            recordsGr.addEncodedQuery(encodedQuery);
+        } else {
+			if (this.throwOnError === true) {throw new Error(CONSTANTS.INVALID_ENCODED_QUERY);}
+            return null;
+        }
+        recordsGr.setLimit(1);
+        recordsGr.query();
+        return recordsGr.hasNext();
+    },
+
+    type: 'DatabaseHelper'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-30 22:09:45</sys_created_on>
+        <sys_id>ca8ea66953b21210829a70c0a0490ea1</sys_id>
+        <sys_mod_count>6</sys_mod_count>
+        <sys_name>DatabaseHelper</sys_name>
+        <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
+        <sys_update_name>sys_script_include_ca8ea66953b21210829a70c0a0490ea1</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-30 23:14:18</sys_updated_on>
+    </sys_script_include>
+    <sys_es_latest_script action="INSERT_OR_UPDATE">
+        <id>ca8ea66953b21210829a70c0a0490ea1</id>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-30 22:09:44</sys_created_on>
+        <sys_id>2cafe62553b21210829a70c0a0490e89</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-30 22:09:44</sys_updated_on>
+        <table>sys_script_include</table>
+        <use_es_latest>true</use_es_latest>
+    </sys_es_latest_script>
+</record_update>
