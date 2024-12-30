@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_properties_category_m2m">
+    <sys_properties_category_m2m action="INSERT_OR_UPDATE">
+        <category display_value="CodeVault Properties">b8887e6553f21210829a70c0a0490ea8</category>
+        <order>100</order>
+        <property display_value="x_648117_codevault.error_handling.throw_on_error" name="x_648117_codevault.error_handling.throw_on_error">3c263ea153f21210829a70c0a0490ed2</property>
+        <sys_class_name>sys_properties_category_m2m</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-30 22:49:11</sys_created_on>
+        <sys_id>a6a87e6553f21210829a70c0a0490eaf</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>x_648117_codevault.error_handling.throw_on_error.CodeVault Properties</sys_name>
+        <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
+        <sys_update_name>sys_properties_category_m2m_a6a87e6553f21210829a70c0a0490eaf</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-30 22:49:11</sys_updated_on>
+    </sys_properties_category_m2m>
+</record_update>
