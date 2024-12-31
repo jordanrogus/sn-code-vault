@@ -1,27 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?><record_update table="sys_properties">
     <sys_properties action="INSERT_OR_UPDATE">
-        <choices/>
-        <description>When calling functions in the code vault this property will determine how errors are enforced. If set to 'true' (yes) then the functions will throw errors that will interrupt script executions unless caught. If set to 'false' (no) then the functions will return 'null' to enable the caller to determine how to handle the error.</description>
+        <choices>db, file</choices>
+        <description>Out of the box functionality to determine the target of logging messages for the scoped application. There are two possible values that can be used for this property:&#13;
+file - Specifying the value as FILE indicates that logging messages for this scoped application should only be sent to the localhost file.  Thus, the messages will appear in the localhost logs but not the syslog table on the instance.&#13;
+db - Specifying db in the Value field for this property indicates that the log messages for the scoped application should be written to both the localhost logs and the syslog table.</description>
         <ignore_cache>true</ignore_cache>
-        <is_private>false</is_private>
-        <name>x_648117_codevault.error_handling.throw_on_error</name>
-        <read_roles>x_648117_codevault.admin</read_roles>
-        <suffix>error_handling.throw_on_error</suffix>
+        <is_private>true</is_private>
+        <name>x_648117_codevault.logging.destination</name>
+        <read_roles>admin</read_roles>
+        <suffix>logging.destination</suffix>
         <sys_class_name>sys_properties</sys_class_name>
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-30 22:47:38</sys_created_on>
         <sys_id>3c263ea153f21210829a70c0a0490ed2</sys_id>
-        <sys_mod_count>2</sys_mod_count>
-        <sys_name>x_648117_codevault.error_handling.throw_on_error</sys_name>
+        <sys_mod_count>4</sys_mod_count>
+        <sys_name>x_648117_codevault.logging.destination</sys_name>
         <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
         <sys_policy/>
         <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
         <sys_update_name>sys_properties_3c263ea153f21210829a70c0a0490ed2</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2024-12-30 23:16:18</sys_updated_on>
-        <type>boolean</type>
-        <value>false</value>
-        <write_roles>x_648117_codevault.admin</write_roles>
+        <sys_updated_on>2024-12-31 15:02:36</sys_updated_on>
+        <type>choicelist</type>
+        <value>db</value>
+        <write_roles>admin</write_roles>
     </sys_properties>
     <sys_translated_text action="delete_multiple" query="documentkey=3c263ea153f21210829a70c0a0490ed2"/>
 </record_update>
