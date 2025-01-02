@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_message">
+    <sys_ui_message action="DELETE">
+        <application/>
+        <code/>
+        <commented_message/>
+        <key>Field '{0}' is invalid for table '{1}' and ignored for objectifying record '{2}'</key>
+        <language>fr</language>
+        <message>Le champ '{0}' n'est pas valide pour la table '{1}' et est ignoré pour l'objectivation de l'enregistrement '{2}'</message>
+        <sys_class_name>sys_ui_message</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-01-02 17:50:03</sys_created_on>
+        <sys_id>71f01d6653f21210829a70c0a0490e49</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Field '{0}' is invalid for table '{1}' and ignored for objectifying record '{2}'</sys_name>
+        <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
+        <sys_update_name>sys_ui_message_71f01d6653f21210829a70c0a0490e49</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-01-02 17:50:03</sys_updated_on>
+    </sys_ui_message>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</application>
+        <file_path/>
+        <instance_id>bd97104dfb8616540921f633beefdc9c</instance_id>
+        <instance_name>dev291134</instance_name>
+        <name>sys_ui_message_71f01d6653f21210829a70c0a0490e49</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_message"><sys_ui_message action="INSERT_OR_UPDATE"><application/><code/><commented_message/><key>Field '{0}' is invalid for table '{1}' and ignored for objectifying record '{2}'</key><language>fr</language><message>Le champ '{0}' n'est pas valide pour la table '{1}' et est ignoré pour l'objectivation de l'enregistrement '{2}'</message><sys_class_name>sys_ui_message</sys_class_name><sys_created_by>admin</sys_created_by><sys_created_on>2025-01-02 17:50:03</sys_created_on><sys_id>71f01d6653f21210829a70c0a0490e49</sys_id><sys_mod_count>0</sys_mod_count><sys_name>Field '{0}' is invalid for table '{1}' and ignored for objectifying record '{2}'</sys_name><sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package><sys_policy/><sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope><sys_update_name>sys_ui_message_71f01d6653f21210829a70c0a0490e49</sys_update_name><sys_updated_by>admin</sys_updated_by><sys_updated_on>2025-01-02 17:50:03</sys_updated_on></sys_ui_message></record_update>]]></payload>
+        <payload_hash>-1371912113</payload_hash>
+        <record_name>Field '{0}' is invalid for table '{1}' and ignored for objectifying record '{2}'</record_name>
+        <reverted_from/>
+        <source>4a2da6a553b21210829a70c0a0490e07</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-01-02 17:50:03</sys_created_on>
+        <sys_id>f1f01d6653f21210829a70c0a0490e4b</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>194282382440000001</sys_recorded_at>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-01-02 17:50:03</sys_updated_on>
+        <type>Message</type>
+        <update_guid>f5f01d66bdf212102055bea07250d84a</update_guid>
+        <update_guid_history>f5f01d66bdf212102055bea07250d84a:-1371912113</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-01-02 18:19:27</sys_created_on>
+        <sys_db_object display_value="" name="sys_ui_message">sys_ui_message</sys_db_object>
+        <sys_id>4982def5bede4d30ac7af5d42bfa8240</sys_id>
+        <sys_metadata>71f01d6653f21210829a70c0a0490e49</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Field '{0}' is invalid for table '{1}' and ignored for objectifying record '{2}'</sys_name>
+        <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
+        <sys_scope_delete display_value="">42ada460bdd14588ae2bc0c42ab0d2a4</sys_scope_delete>
+        <sys_update_name>sys_ui_message_71f01d6653f21210829a70c0a0490e49</sys_update_name>
+        <sys_update_version display_value="sys_ui_message_71f01d6653f21210829a70c0a0490e49">f1f01d6653f21210829a70c0a0490e4b</sys_update_version>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-01-02 18:19:27</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

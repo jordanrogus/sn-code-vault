@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_message">
+    <sys_ui_message action="DELETE">
+        <application/>
+        <code/>
+        <commented_message/>
+        <key>Unsuccessfully cloned source record '{0}' from table '{1}'</key>
+        <language>fq</language>
+        <message>Enregistrement source '{0}' cloné sans succès à partir de la table '{1}'</message>
+        <sys_class_name>sys_ui_message</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-31 19:26:08</sys_created_on>
+        <sys_id>3dc3df7553369210829a70c0a0490e9c</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Unsuccessfully cloned source record '{0}' from table '{1}'</sys_name>
+        <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
+        <sys_update_name>sys_ui_message_3dc3df7553369210829a70c0a0490e9c</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-31 19:26:08</sys_updated_on>
+    </sys_ui_message>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</application>
+        <file_path/>
+        <instance_id>bd97104dfb8616540921f633beefdc9c</instance_id>
+        <instance_name>dev291134</instance_name>
+        <name>sys_ui_message_3dc3df7553369210829a70c0a0490e9c</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_message"><sys_ui_message action="INSERT_OR_UPDATE"><application/><code/><commented_message/><key>Unsuccessfully cloned source record '{0}' from table '{1}'</key><language>fq</language><message>Enregistrement source '{0}' cloné sans succès à partir de la table '{1}'</message><sys_class_name>sys_ui_message</sys_class_name><sys_created_by>admin</sys_created_by><sys_created_on>2024-12-31 19:26:08</sys_created_on><sys_id>3dc3df7553369210829a70c0a0490e9c</sys_id><sys_mod_count>0</sys_mod_count><sys_name>Unsuccessfully cloned source record '{0}' from table '{1}'</sys_name><sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package><sys_policy/><sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope><sys_update_name>sys_ui_message_3dc3df7553369210829a70c0a0490e9c</sys_update_name><sys_updated_by>admin</sys_updated_by><sys_updated_on>2024-12-31 19:26:08</sys_updated_on></sys_ui_message></record_update>]]></payload>
+        <payload_hash>1344226344</payload_hash>
+        <record_name>Unsuccessfully cloned source record '{0}' from table '{1}'</record_name>
+        <reverted_from/>
+        <source>4a2da6a553b21210829a70c0a0490e07</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-31 19:26:08</sys_created_on>
+        <sys_id>bdc3df7553369210829a70c0a0490e9e</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>1941e2ec3800000001</sys_recorded_at>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-31 19:26:08</sys_updated_on>
+        <type>Message</type>
+        <update_guid>b1c3df7583369210dce1f9354d6bce9e</update_guid>
+        <update_guid_history>b1c3df7583369210dce1f9354d6bce9e:1344226344</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-01-02 18:19:26</sys_created_on>
+        <sys_db_object display_value="" name="sys_ui_message">sys_ui_message</sys_db_object>
+        <sys_id>4e8d115c447f497ca1316a8498b8fd51</sys_id>
+        <sys_metadata>3dc3df7553369210829a70c0a0490e9c</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Unsuccessfully cloned source record '{0}' from table '{1}'</sys_name>
+        <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
+        <sys_scope_delete display_value="">42ada460bdd14588ae2bc0c42ab0d2a4</sys_scope_delete>
+        <sys_update_name>sys_ui_message_3dc3df7553369210829a70c0a0490e9c</sys_update_name>
+        <sys_update_version display_value="sys_ui_message_3dc3df7553369210829a70c0a0490e9c">bdc3df7553369210829a70c0a0490e9e</sys_update_version>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-01-02 18:19:26</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>
