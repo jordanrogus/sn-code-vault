@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_scope_privilege">
+    <sys_scope_privilege action="DELETE">
+        <operation>create</operation>
+        <source_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</source_scope>
+        <status>allowed</status>
+        <sys_class_name>sys_scope_privilege</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-01-02 18:10:22</sys_created_on>
+        <sys_id>eb95556a53f21210829a70c0a0490e3d</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>incident</sys_name>
+        <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
+        <sys_update_name>sys_scope_privilege_eb95556a53f21210829a70c0a0490e3d</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-01-02 18:10:22</sys_updated_on>
+        <target_name>incident</target_name>
+        <target_scope display_value="Global">global</target_scope>
+        <target_type>sys_db_object</target_type>
+    </sys_scope_privilege>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</application>
+        <file_path/>
+        <instance_id>bd97104dfb8616540921f633beefdc9c</instance_id>
+        <instance_name>dev291134</instance_name>
+        <name>sys_scope_privilege_eb95556a53f21210829a70c0a0490e3d</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_scope_privilege"><sys_scope_privilege action="INSERT_OR_UPDATE"><operation>create</operation><source_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</source_scope><status>allowed</status><sys_class_name>sys_scope_privilege</sys_class_name><sys_created_by>admin</sys_created_by><sys_created_on>2025-01-02 18:10:22</sys_created_on><sys_id>eb95556a53f21210829a70c0a0490e3d</sys_id><sys_mod_count>0</sys_mod_count><sys_name>incident</sys_name><sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package><sys_policy/><sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope><sys_update_name>sys_scope_privilege_eb95556a53f21210829a70c0a0490e3d</sys_update_name><sys_updated_by>admin</sys_updated_by><sys_updated_on>2025-01-02 18:10:22</sys_updated_on><target_name>incident</target_name><target_scope display_value="Global">global</target_scope><target_type>sys_db_object</target_type></sys_scope_privilege></record_update>]]></payload>
+        <payload_hash>-1202846825</payload_hash>
+        <record_name>incident</record_name>
+        <reverted_from/>
+        <source>4a2da6a553b21210829a70c0a0490e07</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-01-02 18:10:22</sys_created_on>
+        <sys_id>a395556a53f21210829a70c0a0490e41</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>19428361d8e0000001</sys_recorded_at>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-01-02 18:10:22</sys_updated_on>
+        <type>Cross scope privilege</type>
+        <update_guid>a395556a8bf21210feb37d423d1a4640</update_guid>
+        <update_guid_history>a395556a8bf21210feb37d423d1a4640:-1202846825</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-01-02 18:14:58</sys_created_on>
+        <sys_db_object display_value="" name="sys_scope_privilege">sys_scope_privilege</sys_db_object>
+        <sys_id>688d5db7951047c887c4b97055353739</sys_id>
+        <sys_metadata>eb95556a53f21210829a70c0a0490e3d</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>incident</sys_name>
+        <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
+        <sys_scope_delete display_value="">42ada460bdd14588ae2bc0c42ab0d2a4</sys_scope_delete>
+        <sys_update_name>sys_scope_privilege_eb95556a53f21210829a70c0a0490e3d</sys_update_name>
+        <sys_update_version display_value="sys_scope_privilege_eb95556a53f21210829a70c0a0490e3d">a395556a53f21210829a70c0a0490e41</sys_update_version>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-01-02 18:14:58</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

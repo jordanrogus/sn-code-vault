@@ -11,7 +11,9 @@
         <sandbox_callable>false</sandbox_callable>
         <script><![CDATA[const ArithmeticOperation = Class.create();
 ArithmeticOperation.prototype = {
-    initialize: function() {},
+    initialize: function() {
+        this.tc = new x_648117_codevault.TypeChecker();
+    },
 
     /**
      * From an array of elements (of up to 1000 elements) add all of the numeric values. If a value is not numeric it is skipped
@@ -21,7 +23,7 @@ ArithmeticOperation.prototype = {
      * @returns {Number|null}
      **/
     sumElements: function(array) {
-        const filteredArray = this._validate(array);
+        const filteredArray = this._sanitizeForArithmetic(array);
         if (!filteredArray) {
             gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS));
             return null;
@@ -39,13 +41,13 @@ ArithmeticOperation.prototype = {
      * @returns {Number|null}
      **/
     subtractElements: function(array) {
-        const filteredArray = this._validate(array);
+        const filteredArray = this._sanitizeForArithmetic(array);
         if (!filteredArray) {
             gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS));
             return null;
         }
-        if (filteredArray.length == 1) {
-            return filteredArray[0];
+        if (filteredArray.length === 1) {
+            return parseFloat(filteredArray[0]).toFixed(2);
         }
         return filteredArray.reduce(function(total, num) {
             return parseFloat(total) - parseFloat(num);
@@ -57,23 +59,36 @@ ArithmeticOperation.prototype = {
      * @example .divideElements([100,50,25]) results in (100/50/25) which is (100/50) = 2/25 = 0.08
      * 
      * @param {Array.<string>} array - Array of values to divide
-     * @returns {Number|null}
+     * @returns {Number|null} - Null if invalid params or division by 0
      **/
     divideElements: function(array) {
-        const filteredArray = this._validate(array);
+        const filteredArray = this._sanitizeForArithmetic(array);
         if (!filteredArray) {
             gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS));
             return null;
         }
-        if (filteredArray.length == 1) {
-            return filteredArray[0];
-        }
-        return filteredArray.reduce(function(total, num) {
-            if (num == 0) {
-                return total;
+        if (filteredArray.length === 1) {
+            if (parseFloat(filteredArray[0]) === 0) {
+                return null;
             }
-            return parseFloat(total) / parseFloat(num);
-        }).toFixed(2);
+            return parseFloat(filteredArray[0]).toFixed(2);
+        }
+
+        const result = filteredArray.reduce(function(total, num) {
+            const parsedTotal = parseFloat(total);
+            const parsedNum = parseFloat(num);
+
+            // Check if any number is zero or total is null/undefined or invalid
+            if (parsedNum === 0 || parsedTotal === 0 || parsedTotal == null || isNaN(parsedTotal) || isNaN(parsedNum)) {
+                return null;
+            }
+            return parsedTotal / parsedNum;
+        });
+
+        if (this.tc.isNull(result)) {
+            return result;
+        }
+        return result.toFixed(2);
     },
 
     /**
@@ -84,13 +99,13 @@ ArithmeticOperation.prototype = {
      * @returns {Number|null}
      **/
     multiplyElements: function(array) {
-        const filteredArray = this._validate(array);
+        const filteredArray = this._sanitizeForArithmetic(array);
         if (!filteredArray) {
             gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS));
             return null;
         }
-        if (filteredArray.length == 1) {
-            return filteredArray[0];
+        if (filteredArray.length === 1) {
+            return parseFloat(filteredArray[0]).toFixed(2);
         }
         return filteredArray.reduce(function(total, num) {
             return parseFloat(total) * parseFloat(num);
@@ -100,33 +115,24 @@ ArithmeticOperation.prototype = {
     /**
      * Validates the array is ready for arithmetic operations by:
      * (1) Ensure the array is a non-empty array
-     * (2) Filters an array to keep only elements that are:
-     *   (1) A string or a number
-     *   (2) Not empty
-     *   (3) Evaluates to NaN
-	 * (3) Keeping only the first 1000 elements for performance concerns
+     * (2) Keeping only the first 1000 elements for performance concerns
+     * (3) Validates the elements of the array are or can be coerced into numbers
      * 
      * @param {Array.<string>} array - Array to filter
      * @returns {Array.<string>|null} - Filtered array
      **/
-    _validate: function(array) {
-        if (!Array.isArray(array) || array.length === 0) {
+    _sanitizeForArithmetic: function(array) {
+        if (!this.tc.isPopulatedArray(array)) {
             return null;
         }
-		if (array.length > CONSTANTS.ARITHMETIC_ARRAY_MAX_LENGTH){
-			array = array.slice(0, CONSTANTS.ARITHMETIC_ARRAY_MAX_LENGTH);
-		}
-        return array.filter(function(element) {
-            const isNotString = typeof element !== "string";
-            const isNotNumber = typeof element !== "number";
-            const isEmpty = !element;
-            const isValNaN = isNaN(element);
+        if (array.length > CONSTANTS.ARITHMETIC_ARRAY_MAX_LENGTH) {
+            gs.error(gs.getMessage(CONSTANTS.ARITHMETIC_ARRAY_MAX_LENGTH_REACHED, [CONSTANTS.ARITHMETIC_ARRAY_MAX_LENGTH]));
+            return null;
 
-            if ((isNotString && isNotNumber) || isEmpty || isValNaN) {
-                return false;
-            }
-            return element;
-        });
+        }
+        return array.filter(function(element) {
+            return this.tc.isParsableAsNumber(element) && this.tc.isFiniteNumber(parseFloat(element));
+        }.bind(this));
     },
 
     type: 'ArithmeticOperation'
@@ -135,14 +141,14 @@ ArithmeticOperation.prototype = {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-31 19:31:16</sys_created_on>
         <sys_id>91e49bb553369210829a70c0a0490e90</sys_id>
-        <sys_mod_count>7</sys_mod_count>
+        <sys_mod_count>33</sys_mod_count>
         <sys_name>ArithmeticOperation</sys_name>
         <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
         <sys_update_name>sys_script_include_91e49bb553369210829a70c0a0490e90</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2024-12-31 22:25:59</sys_updated_on>
+        <sys_updated_on>2025-01-02 18:13:18</sys_updated_on>
     </sys_script_include>
     <sys_es_latest_script action="INSERT_OR_UPDATE">
         <id>91e49bb553369210829a70c0a0490e90</id>
