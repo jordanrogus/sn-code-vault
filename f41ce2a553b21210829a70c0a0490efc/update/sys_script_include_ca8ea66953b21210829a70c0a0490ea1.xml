@@ -11,7 +11,9 @@
         <sandbox_callable>false</sandbox_callable>
         <script><![CDATA[const DatabaseHelper = Class.create();
 DatabaseHelper.prototype = {
-    initialize: function() {},
+    initialize: function() {
+        this.tc = new x_648117_codevault.TypeChecker();
+    },
 
     /**
      * Retrieves a record from a table 
@@ -20,7 +22,7 @@ DatabaseHelper.prototype = {
      * @returns {GlideRecord object|null} - Retrieved record 
      **/
     fetchGlideRecord: function(tableName, sysId) {
-        if (!gs.tableExists(tableName) || typeof sysId !== 'string' || sysId.trim().length !== 32) {
+        if (!gs.tableExists(tableName) || !this.tc.isSysId(sysId)) {
             gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS));
             return null;
         }
@@ -39,7 +41,7 @@ DatabaseHelper.prototype = {
      * @returns {string|null} - Record display value
      **/
     fetchRecordDisplay: function(tableName, sysId) {
-        if (!gs.tableExists(tableName) || typeof sysId !== 'string' || sysId.trim().length !== 32) {
+        if (!gs.tableExists(tableName) || !this.tc.isSysId(sysId)) {
             gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS));
             return null;
         }
@@ -52,13 +54,13 @@ DatabaseHelper.prototype = {
     },
 
     /**
-     * Retrieves table records from a query 
+     * Retrieves table records from a query. Must pass in a query
      * @param {string} tableName - Table to query
      * @param {string} encodedQuery - Encoded query to filter table against
      * @returns {GlideRecord object|null} - Retrieved record(s) 
      **/
     fetchGlideRecords(tableName, encodedQuery) {
-        if (!gs.tableExists(tableName) || typeof encodedQuery !== 'string' || encodedQuery.trim().length === 0) {
+        if (!gs.tableExists(tableName) || !this.tc.isPopulatedString(encodedQuery)) {
             gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS));
             return null;
         }
@@ -68,7 +70,7 @@ DatabaseHelper.prototype = {
             gs.error(gs.getMessage(CONSTANTS.INVALID_ENCODED_QUERY, [encodedQuery, tableName]));
             return null;
         }
-		recordsGr.addEncodedQuery(encodedQuery);
+        recordsGr.addEncodedQuery(encodedQuery);
         recordsGr.query();
         if (recordsGr.hasNext()) {
             return recordsGr;
@@ -83,12 +85,12 @@ DatabaseHelper.prototype = {
      * @returns {Array.<string>|null} - Array of records as display values
      **/
     fetchRecordsDisplay: function(tableName, array) {
-        if (!gs.tableExists(tableName) || !Array.isArray(array) || array.length === 0) {
+        if (!gs.tableExists(tableName) || !this.tc.isPopulatedArray(array)) {
             gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS));
             return null;
         }
         if (array.length > CONSTANTS.ARRAY_DISPLAY_TRANSLATION_MAX_LENGTH) {
-            gs.error(gs.getMessage(ARRAY_DISPLAY_TRANSLATION_MAX_LENGTH_REACHED, [tableName, CONSTANTS.ARRAY_DISPLAY_TRANSLATION_MAX_LENGTH]));
+            gs.error(gs.getMessage(CONSTANTS.ARRAY_DISPLAY_TRANSLATION_MAX_LENGTH_REACHED, [tableName, CONSTANTS.ARRAY_DISPLAY_TRANSLATION_MAX_LENGTH]));
             return null;
         }
 
@@ -104,23 +106,23 @@ DatabaseHelper.prototype = {
     },
 
     /**
-     * Checks if records exist in table from a query
+     * Checks if records exist in table from a query. Must pass in a query
      * @param {string} tableName - Table to query
      * @param {string} encodedQuery - Encoded query to use in check
      * @returns {boolean|null} - If the query against the table returned any records
      **/
     hasRecords: function(tableName, encodedQuery) {
-        if (!gs.tableExists(tableName) || typeof encodedQuery !== 'string' || encodedQuery.trim().length === 0) {
+        if (!gs.tableExists(tableName) || !this.tc.isPopulatedString(encodedQuery)) {
             gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS));
             return null;
         }
 
         const recordsGr = new GlideRecord(tableName);
-		if (!recordsGr.isEncodedQueryValid(encodedQuery)) {
+        if (!recordsGr.isEncodedQueryValid(encodedQuery)) {
             gs.error(gs.getMessage(CONSTANTS.INVALID_ENCODED_QUERY, [encodedQuery, tableName]));
             return null;
         }
-		recordsGr.addEncodedQuery(encodedQuery);
+        recordsGr.addEncodedQuery(encodedQuery);
         recordsGr.setLimit(1);
         recordsGr.query();
         return recordsGr.hasNext();
@@ -140,7 +142,7 @@ DatabaseHelper.prototype = {
 
         var recordCountGa = new GlideAggregate(tableName);
         if (encodedQuery) {
-            if (typeof encodedQuery !== 'string') {
+            if (!this.tc.isString(encodedQuery)) {
                 gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS));
                 return null;
             }
@@ -164,26 +166,21 @@ DatabaseHelper.prototype = {
      * @returns {string} obj.<fieldName>.displayValue - Field display value
      **/
     transformGrToObj: function(sourceGr, fields) {
-        if (!(sourceGr instanceof GlideRecord)) {
+        if (!this.tc.isGlideRecord(sourceGr)) {
             gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS));
             return null;
         }
 
-        if (!fields || fields.length === 0) {
+        if (!this.tc.isPopulatedArray(fields)) {
             const glideRecordUtil = new global.GlideRecordUtil();
             fields = glideRecordUtil.getFields(sourceGr);
         }
 
-        if (!(fields && Array.isArray(fields) && fields.length > 0)) {
-            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS));
-            return null;
-        }
-
-		const obj = {};
+        const obj = {};
         fields.forEach(field => {
-            // Add empty data if field does not exist
+            // Add empty data if field does not exist and log msg
             if (!sourceGr.isValidField(field)) {
-                this._addElement(obj, field, "", "");
+                gs.warn(gs.getMessage(CONSTANTS.INVALID_TABLE_FIELD, [field, sourceGr.getTableName(), sourceGr.getDisplayValue()]));
                 return;
             }
 
@@ -196,7 +193,7 @@ DatabaseHelper.prototype = {
                 return;
             }
 
-            if (fieldType == "boolean") {
+            if (fieldType === CONSTANTS.BOOLEAN_FIELD_TYPE) {
                 var boolValue = gr.getValue(field) == 1; // Raw boolean values are stored as a 0 (false) or a 1 (true)
                 this._addElement(obj, field, boolValue, "");
                 return;
@@ -212,7 +209,7 @@ DatabaseHelper.prototype = {
             // Other field types
             this._addElement(obj, field, gr.getValue(field), "");
         });
-		return obj;
+        return obj;
     },
 
     /**
@@ -237,14 +234,14 @@ DatabaseHelper.prototype = {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-30 22:09:45</sys_created_on>
         <sys_id>ca8ea66953b21210829a70c0a0490ea1</sys_id>
-        <sys_mod_count>31</sys_mod_count>
+        <sys_mod_count>42</sys_mod_count>
         <sys_name>DatabaseHelper</sys_name>
         <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
         <sys_update_name>sys_script_include_ca8ea66953b21210829a70c0a0490ea1</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2024-12-31 22:25:26</sys_updated_on>
+        <sys_updated_on>2025-01-02 18:13:25</sys_updated_on>
     </sys_script_include>
     <sys_es_latest_script action="INSERT_OR_UPDATE">
         <id>ca8ea66953b21210829a70c0a0490ea1</id>
