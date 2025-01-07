@@ -7,7 +7,7 @@ ArithmeticOperation - Functions to support common arithmetic operations</br>
 DatabaseHelper - Utility functions to simplify and standardize certain common interactions with the ServiceNow database</br>
 DuplicateFinder - Functions to support checking for duplicate records</br>
 RecordCloner - Functions to support cloning SN records</br>
-TypeChecker - Functions to support JS and SN type checking</br></br>
+TypeChecker - Functions to support JS and SN type checking</br>
 
 The follow classes (script includes) are on the backlog</br>
 ArrayHandler</br>
