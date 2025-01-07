@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>public</access>
+        <active>true</active>
+        <api_name>x_648117_codevault.ArrayHandler</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>Functions to support common array manipulations</description>
+        <mobile_callable>false</mobile_callable>
+        <name>ArrayHandler</name>
+        <sandbox_callable>false</sandbox_callable>
+        <script><![CDATA[var ArrayHandler = Class.create();
+ArrayHandler.prototype = {
+    initialize: function() {
+    },
+
+	// Find unique objects by key
+
+	// Group by key
+
+	// Sort by key 
+
+	// Flatten Nested Arrays 
+
+	// Chunk Array
+
+	// Map Objects to Array of Vals
+
+	// Cleanse Array of Null/Undefined
+
+	// Partition Array
+
+	// Convert Array to Key-Value Obj
+
+    type: 'ArrayHandler'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-01-07 19:49:39</sys_created_on>
+        <sys_id>ee4c534453471210829a70c0a0490e8b</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>ArrayHandler</sys_name>
+        <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
+        <sys_update_name>sys_script_include_ee4c534453471210829a70c0a0490e8b</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-01-07 19:51:51</sys_updated_on>
+    </sys_script_include>
+    <sys_es_latest_script action="INSERT_OR_UPDATE">
+        <id>ee4c534453471210829a70c0a0490e8b</id>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-01-07 19:51:51</sys_created_on>
+        <sys_id>32cc534453471210829a70c0a0490e90</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-01-07 19:51:51</sys_updated_on>
+        <table>sys_script_include</table>
+        <use_es_latest>true</use_es_latest>
+    </sys_es_latest_script>
+</record_update>

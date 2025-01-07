@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>public</access>
+        <active>true</active>
+        <api_name>x_648117_codevault.ChronoManager</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>Functions to support common data/time operations</description>
+        <mobile_callable>false</mobile_callable>
+        <name>ChronoManager</name>
+        <sandbox_callable>false</sandbox_callable>
+        <script><![CDATA[var ChronoManager = Class.create();
+ChronoManager.prototype = {
+    initialize: function() {
+    },
+
+	// isWeekend
+
+	// isWeekday
+
+	// getDaysBetween
+
+	// isDateInRange
+
+	// getWeekNumber
+
+	// getMonthName
+
+	// getDayOfWeek
+
+	// getTimeDiffInHours
+
+	// getTimeDiffReadable
+
+	// isPastDate
+
+	// convertTz
+
+    type: 'ChronoManager'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-01-07 19:37:12</sys_created_on>
+        <sys_id>0c791b4053471210829a70c0a0490ea0</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>ChronoManager</sys_name>
+        <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
+        <sys_update_name>sys_script_include_0c791b4053471210829a70c0a0490ea0</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-01-07 19:45:53</sys_updated_on>
+    </sys_script_include>
+    <sys_es_latest_script action="INSERT_OR_UPDATE">
+        <id>0c791b4053471210829a70c0a0490ea0</id>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-01-07 19:37:29</sys_created_on>
+        <sys_id>58891b4053471210829a70c0a0490ea5</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-01-07 19:37:29</sys_updated_on>
+        <table>sys_script_include</table>
+        <use_es_latest>true</use_es_latest>
+    </sys_es_latest_script>
+</record_update>
