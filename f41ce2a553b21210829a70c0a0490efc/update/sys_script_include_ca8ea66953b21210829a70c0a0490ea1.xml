@@ -23,7 +23,7 @@ DatabaseHelper.prototype = {
      **/
     fetchGlideRecord: function(tableName, sysId) {
         if (!gs.tableExists(tableName) || !this.tc.isSysId(sysId)) {
-            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS));
+            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
             return null;
         }
 
@@ -42,7 +42,7 @@ DatabaseHelper.prototype = {
      **/
     fetchRecordDisplay: function(tableName, sysId) {
         if (!gs.tableExists(tableName) || !this.tc.isSysId(sysId)) {
-            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS));
+            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
             return null;
         }
 
@@ -61,7 +61,7 @@ DatabaseHelper.prototype = {
      **/
     fetchGlideRecords(tableName, encodedQuery) {
         if (!gs.tableExists(tableName) || !this.tc.isPopulatedString(encodedQuery)) {
-            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS));
+            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
             return null;
         }
 
@@ -86,7 +86,7 @@ DatabaseHelper.prototype = {
      **/
     fetchRecordsDisplay: function(tableName, array) {
         if (!gs.tableExists(tableName) || !this.tc.isPopulatedArray(array)) {
-            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS));
+            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
             return null;
         }
         if (array.length > CONSTANTS.ARRAY_DISPLAY_TRANSLATION_MAX_LENGTH) {
@@ -113,7 +113,7 @@ DatabaseHelper.prototype = {
      **/
     hasRecords: function(tableName, encodedQuery) {
         if (!gs.tableExists(tableName) || !this.tc.isPopulatedString(encodedQuery)) {
-            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS));
+            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
             return null;
         }
 
@@ -136,14 +136,14 @@ DatabaseHelper.prototype = {
      **/
     fetchRecordCount: function(tableName, encodedQuery) {
         if (!gs.tableExists(tableName)) {
-            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS));
+            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
             return null;
         }
 
         var recordCountGa = new GlideAggregate(tableName);
         if (encodedQuery) {
             if (!this.tc.isString(encodedQuery)) {
-                gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS));
+                gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
                 return null;
             }
             recordCountGa.addEncodedQuery(encodedQuery);
@@ -167,7 +167,7 @@ DatabaseHelper.prototype = {
      **/
     transformGrToObj: function(sourceGr, fields) {
         if (!this.tc.isGlideRecord(sourceGr)) {
-            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS));
+            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
             return null;
         }
 
@@ -234,14 +234,14 @@ DatabaseHelper.prototype = {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-30 22:09:45</sys_created_on>
         <sys_id>ca8ea66953b21210829a70c0a0490ea1</sys_id>
-        <sys_mod_count>42</sys_mod_count>
+        <sys_mod_count>43</sys_mod_count>
         <sys_name>DatabaseHelper</sys_name>
         <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
         <sys_update_name>sys_script_include_ca8ea66953b21210829a70c0a0490ea1</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2025-01-02 18:13:25</sys_updated_on>
+        <sys_updated_on>2025-01-09 00:07:38</sys_updated_on>
     </sys_script_include>
     <sys_es_latest_script action="INSERT_OR_UPDATE">
         <id>ca8ea66953b21210829a70c0a0490ea1</id>
