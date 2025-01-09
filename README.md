@@ -14,5 +14,5 @@ The follow classes (script includes) are on the backlog</br>
 ArrayHandler</br>
 ChronoManager</br>
 JsonHandler</br>
-StringHandler
-OrderHierarchy
+StringHandler</br>
+OrderHierarchy</br>
