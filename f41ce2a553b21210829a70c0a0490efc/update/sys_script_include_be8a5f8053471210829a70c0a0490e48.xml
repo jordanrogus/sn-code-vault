@@ -12,11 +12,64 @@
         <script><![CDATA[var XmlJsonConverter = Class.create();
 XmlJsonConverter.prototype = {
     initialize: function() {
+        this.tc = new x_648117_codevault.TypeChecker();
+        this.stringHandler = new x_648117_codevault.StringHandler();
     },
 
-	// XML to JSON
+    /**
+     * Translates XML to JSON
+     * @param {string} xmlString - XML string to translate
+     * @returns {object|null} - Translated JSON
+     **/
+    xmlToJson: function(xmlString) {
+        if (!this.tc.isXmlString(xmlString)) {
+            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments))); 
+            return null;
+        }
+        return gs.xmlToJSON(xmlString);
+    },
 
-	// JSON to XML
+    /**
+     * Translates JSON to XML
+     * @param {object} jsonObj - JSON object to translate
+	 * @param {string} [rootElement] - Optional XML root element name to use 
+     * @returns {string|null} - Translated XML
+     **/
+    jsonToXml: function(jsonObj, rootElement) {
+        if (!this.tc.isObject(jsonObj)) {
+            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments))); 
+            return null;
+        }
+
+        rootElement = rootElement || CONSTANTS.DEFAULT_JSON_ROOT_ELEMENT;
+        let xml = '<' + rootElement + '>';
+        xml += this._convertToXml(jsonObj);
+        xml += '</' + rootElement + '>';
+        return xml;
+    },
+
+    /**
+     * Recursively converts a JSON object to an XML string
+     * @param {object} jsonObj - The JSON object or value to convert
+     * @returns {string} - The resulting XML string
+     **/
+    _convertToXml: function(jsonObj) {
+        let xml = '';
+
+        for (let key in jsonObj) {
+            if (jsonObj.hasOwnProperty(key)) {
+                var value = jsonObj[key];
+                if (this.tc.isObject(value) || this.tc.isArray(value)) {
+                    xml += '<' + key + '>';
+                    xml += this._convertToXml(value);
+                    xml += '</' + key + '>';
+                } else {
+                    xml += '<' + key + '>' + this.stringHandler.escapeXml(value.toString()) + '</' + key + '>';
+                }
+            }
+        }
+        return xml;
+    },
 
     type: 'XmlJsonConverter'
 };]]></script>
@@ -24,14 +77,14 @@ XmlJsonConverter.prototype = {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2025-01-07 19:42:01</sys_created_on>
         <sys_id>be8a5f8053471210829a70c0a0490e48</sys_id>
-        <sys_mod_count>2</sys_mod_count>
+        <sys_mod_count>13</sys_mod_count>
         <sys_name>XmlJsonConverter</sys_name>
         <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
         <sys_update_name>sys_script_include_be8a5f8053471210829a70c0a0490e48</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2025-01-07 19:42:23</sys_updated_on>
+        <sys_updated_on>2025-01-09 00:04:54</sys_updated_on>
     </sys_script_include>
     <sys_es_latest_script action="INSERT_OR_UPDATE">
         <id>be8a5f8053471210829a70c0a0490e48</id>

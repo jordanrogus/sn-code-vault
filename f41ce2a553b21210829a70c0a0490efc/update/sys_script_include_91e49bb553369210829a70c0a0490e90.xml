@@ -25,7 +25,7 @@ ArithmeticOperation.prototype = {
     sumElements: function(array) {
         const filteredArray = this._sanitizeForArithmetic(array);
         if (!filteredArray) {
-            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS));
+            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments))); 
             return null;
         }
         return filteredArray.reduce(function(total, num) {
@@ -43,7 +43,7 @@ ArithmeticOperation.prototype = {
     subtractElements: function(array) {
         const filteredArray = this._sanitizeForArithmetic(array);
         if (!filteredArray) {
-            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS));
+            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments))); 
             return null;
         }
         if (filteredArray.length === 1) {
@@ -64,7 +64,7 @@ ArithmeticOperation.prototype = {
     divideElements: function(array) {
         const filteredArray = this._sanitizeForArithmetic(array);
         if (!filteredArray) {
-            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS));
+            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments))); 
             return null;
         }
         if (filteredArray.length === 1) {
@@ -101,7 +101,7 @@ ArithmeticOperation.prototype = {
     multiplyElements: function(array) {
         const filteredArray = this._sanitizeForArithmetic(array);
         if (!filteredArray) {
-            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS));
+            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments))); 
             return null;
         }
         if (filteredArray.length === 1) {
@@ -141,14 +141,14 @@ ArithmeticOperation.prototype = {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-31 19:31:16</sys_created_on>
         <sys_id>91e49bb553369210829a70c0a0490e90</sys_id>
-        <sys_mod_count>33</sys_mod_count>
+        <sys_mod_count>34</sys_mod_count>
         <sys_name>ArithmeticOperation</sys_name>
         <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
         <sys_update_name>sys_script_include_91e49bb553369210829a70c0a0490e90</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2025-01-02 18:13:18</sys_updated_on>
+        <sys_updated_on>2025-01-09 00:07:58</sys_updated_on>
     </sys_script_include>
     <sys_es_latest_script action="INSERT_OR_UPDATE">
         <id>91e49bb553369210829a70c0a0490e90</id>
