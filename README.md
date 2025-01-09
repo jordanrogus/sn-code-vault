@@ -8,10 +8,10 @@ DatabaseHelper - Utility functions to simplify and standardize certain common in
 DuplicateFinder - Functions to support checking for duplicate records</br>
 RecordCloner - Functions to support cloning SN records</br>
 TypeChecker - Functions to support JS and SN type checking</br>
+XmlJsonConverter - Functions to support handling XML and JSON conversions</br>
 
 The follow classes (script includes) are on the backlog</br>
 ArrayHandler</br>
 ChronoManager</br>
 JsonHandler</br>
-StringHandler</br>
-XmlJsonConverter
+StringHandler
