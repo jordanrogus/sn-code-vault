@@ -9,39 +9,39 @@
         <mobile_callable>false</mobile_callable>
         <name>TypeChecker</name>
         <sandbox_callable>false</sandbox_callable>
-        <script><![CDATA[var TypeChecker = Class.create();
+        <script><![CDATA[const TypeChecker = Class.create();
 TypeChecker.prototype = {
-    initialize: function() {},
+    initialize: function () {},
 
-    isNull: function(arg) {
+    isNull: function (arg) {
         return arg === null;
     },
 
-    isUndefined: function(arg) {
+    isUndefined: function (arg) {
         return arg === undefined;
     },
 
-    isNil: function(arg) {
+    isNil: function (arg) {
         return this.isNull(arg) || this.isUndefined(arg);
     },
 
-    isString: function(arg) {
+    isString: function (arg) {
         return typeof arg === 'string';
     },
 
-    isEmptyString: function(arg) {
+    isEmptyString: function (arg) {
         return this.isString(arg) && arg.length === 0;
     },
 
-    isPopulatedString: function(arg) {
+    isPopulatedString: function (arg) {
         return this.isString(arg) && arg.trim().length > 0;
     },
 
-    isSysId: function(arg) {
+    isSysId: function (arg) {
         return this.isString(arg) && /^[a-z0-9]{32}$/i.test(arg);
     },
 
-    isJsonString: function(arg) {
+    isJsonString: function (arg) {
         if (!this.isString(arg)) {
             return false;
         }
@@ -54,20 +54,20 @@ TypeChecker.prototype = {
         }
     },
 
-    isXmlString: function(arg) {
+    isXmlString: function (arg) {
         if (!this.isString(arg)) {
             return false;
         }
 
-		const check = GlideXMLUtil.validateXML(arg, false, false);
-		return check === null ? true : false;
+        const check = GlideXMLUtil.validateXML(arg, false, false);
+        return check === null ? true : false;
     },
 
-    isRegExp: function(arg) {
+    isRegExp: function (arg) {
         return arg instanceof RegExp;
     },
 
-    isParsableAsNumber: function(arg) {
+    isParsableAsNumber: function (arg) {
         // Check if it's a number directly
         if (this.isNumber(arg)) {
             return true;
@@ -82,100 +82,113 @@ TypeChecker.prototype = {
         return false;
     },
 
-    isNumber: function(arg) {
-        return typeof arg === "number";
+    isNumber: function (arg) {
+        return typeof arg === 'number';
     },
 
-    isFiniteNumber: function(arg) {
+    isFiniteNumber: function (arg) {
         return this.isNumber(arg) && isFinite(arg);
     },
 
-    isInteger: function(arg) {
+    isInteger: function (arg) {
         return Number.isInteger(arg);
     },
 
-    isPositiveInteger: function(arg) {
+    isPositiveInteger: function (arg) {
         return this.isInteger(arg) && arg > 0;
     },
 
-    isNegativeInteger: function(arg) {
+    isNegativeInteger: function (arg) {
         return this.isInteger(arg) && arg < 0;
     },
 
-    isBoolean: function(arg) {
+    isBoolean: function (arg) {
         return typeof arg === 'boolean';
     },
 
-    isBooleanTrue: function(arg) {
+    isBooleanTrue: function (arg) {
         return this.isBoolean(arg) && arg === true;
     },
 
-    isBooleanFalse: function(arg) {
+    isBooleanFalse: function (arg) {
         return this.isBoolean(arg) && arg === false;
     },
 
-    isArray: function(arg) {
+    isArray: function (arg) {
         return Array.isArray(arg);
     },
 
-    isEmptyArray: function(arg) {
+    isEmptyArray: function (arg) {
         return this.isArray(arg) && arg.length === 0;
     },
 
-    isPopulatedArray: function(arg) {
+    isPopulatedArray: function (arg) {
         return this.isArray(arg) && arg.length > 0;
     },
 
-    isObject: function(arg) {
-        return typeof arg === 'object' && !this.isArray(arg) && !this.isNull(arg);
+    isObject: function (arg) {
+        return (
+            typeof arg === 'object' && !this.isArray(arg) && !this.isNull(arg)
+        );
     },
 
-    isEmptyObject: function(arg) {
+    isEmptyObject: function (arg) {
         return this.isObject(arg) && Object.keys(arg).length === 0;
     },
 
-    isPopulatedObject: function(arg) {
+    isPopulatedObject: function (arg) {
         return this.isObject(arg) && Object.keys(arg).length > 0;
     },
 
-    isObjectArray: function(arg) {
-        return this.isArray(arg) && arg.every(function(element) {
-            return this.isObject(element);
-        }.bind(this));
+    isObjectArray: function (arg) {
+        return (
+            this.isArray(arg) &&
+            arg.every(
+                function (element) {
+                    return this.isObject(element);
+                }.bind(this)
+            )
+        );
     },
 
-    isStringArray: function(arg) {
-        return this.isArray(arg) && arg.every(function(element) {
-            return this.isString(element);
-        }.bind(this));
+    isStringArray: function (arg) {
+        return (
+            this.isArray(arg) &&
+            arg.every(
+                function (element) {
+                    return this.isString(element);
+                }.bind(this)
+            )
+        );
     },
 
-    isFunction: function(arg) {
+    isFunction: function (arg) {
         return typeof arg === 'function';
     },
 
-    isGlideRecord: function(arg) {
+    isGlideRecord: function (arg) {
         return arg instanceof GlideRecord;
     },
 
-    isGlideAggregate: function(arg) {
+    isGlideAggregate: function (arg) {
         return arg instanceof GlideAggregate;
     },
 
-    type: 'TypeChecker'
-};]]></script>
+    type: 'TypeChecker',
+};
+]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-31 22:47:39</sys_created_on>
         <sys_id>32308c4e53f69210829a70c0a0490e61</sys_id>
-        <sys_mod_count>20</sys_mod_count>
+        <sys_mod_count>25</sys_mod_count>
         <sys_name>TypeChecker</sys_name>
         <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
-        <sys_policy>read</sys_policy>
+        <sys_policy/>
         <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
         <sys_update_name>sys_script_include_32308c4e53f69210829a70c0a0490e61</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2025-01-08 16:09:11</sys_updated_on>
+        <sys_updated_on>2025-02-11 21:58:56</sys_updated_on>
     </sys_script_include>
     <sys_es_latest_script action="INSERT_OR_UPDATE">
         <id>32308c4e53f69210829a70c0a0490e61</id>

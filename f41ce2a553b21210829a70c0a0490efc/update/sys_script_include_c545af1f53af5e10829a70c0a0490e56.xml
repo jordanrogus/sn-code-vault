@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>public</access>
+        <active>true</active>
+        <api_name>x_648117_codevault.GlideService</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>A service to simply interacting with GlideRecord.&#13;
+&#13;
+Courtsey of David Arbour.</description>
+        <mobile_callable>false</mobile_callable>
+        <name>GlideService</name>
+        <sandbox_callable>false</sandbox_callable>
+        <script><![CDATA[var GlideService = function(tableName) {
+    return {
+        glidify: glidify,
+        insert: insert,
+        multiple: multiple,
+        objectify: objectify,
+        remove: remove,
+        single: single,
+        singleId: singleId,
+        update: update,
+        type: 'GlideService'
+    };
+
+    /**
+     * Converts a record object into a GlideRecord instance.
+     * @param {Object} recordObject - The record object containing a sys_id.
+     * @returns {GlideRecord|undefined} The GlideRecord instance if found.
+     **/
+    function glidify(recordObject) {
+        if (recordObject && recordObject.sys_id.value) {
+            const glideRecord = _create();
+            if (glideRecord.get(recordObject.sys_id.value)) {
+                return glideRecord;
+            }
+        }
+    }
+
+    /**
+     * Inserts a new record into the table.
+     * @param {Object} recordObject - The data for the new record.
+     * @returns {string|boolean} The sys_id of the new record or false on failure.
+     **/
+    function insert(recordObject) {
+        const glideRecordInit = _create(true);
+        if (glideRecordInit) {
+            const glideRecord = _populate(glideRecordInit, recordObject);
+            if (glideRecord) {
+                return glideRecord.insert();
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Retrieves multiple records based on an encoded query.
+     * @param {string} encodedQuery - The query string.
+     * @param {string[]} fieldNames - The fields to retrieve.
+     * @param {number} rowCount - The maximum number of records to return.
+     * @returns {Object[]} An array of record objects.
+     **/
+    function multiple(encodedQuery, fieldNames, rowCount) {
+        encodedQuery = encodedQuery ? encodedQuery.toString() : '';
+        rowCount = parseInt(rowCount);
+        const glideRecord = _create();
+        if (encodedQuery) {
+            glideRecord.addQuery(encodedQuery);
+        }
+        if (!isNaN(rowCount) && rowCount > 0) {
+            glideRecord.setLimit(rowCount);
+        }
+        glideRecord._query();
+        if (glideRecord.hasNext()) {
+            return _toArray(glideRecord, fieldNames);
+        }
+        return [];
+    }
+
+    /**
+     * Converts a GlideRecord instance into a plain object.
+     * @param {GlideRecord} glideRecord - The GlideRecord instance.
+     * @returns {Object} A plain object representing the record.
+     **/
+    function objectify(glideRecord) {
+        if (glideRecord instanceof GlideRecord) {
+            return _toObject(glideRecord);
+        }
+        return glideRecord;
+    }
+
+    /**
+     * Deletes a record by sys_id.
+     * @param {string} sysId - The sys_id of the record to delete.
+     * @returns {boolean} True if the record was deleted, otherwise false.
+     **/
+    function remove(sysId) {
+        const glideRecord = _create();
+        if (glideRecord.get(sysId)) {
+            return glideRecord.deleteRecord();
+        }
+    }
+
+    /**
+     * Retrieves a single record matching the query.
+     * @param {string} encodedQuery - The query string.
+     * @param {string[]} fieldNames - The fields to retrieve.
+     * @returns {Object|null} The matching record object or null if not found.
+     **/
+    function single(encodedQuery, fieldNames) {
+        encodedQuery = encodedQuery ? encodedQuery.toString() : '';
+        const glideRecord = _create();
+        glideRecord.setLimit(1);
+        glideRecord.addEncodedQuery(encodedQuery);
+        glideRecord._query();
+        if (glideRecord._next()) {
+            return _toObject(glideRecord, fieldNames);
+        }
+        return null;
+    }
+
+    /**
+     * Retrieves a single record by sys_id.
+     * @param {string} sysId - The sys_id of the record.
+     * @param {string[]} fieldNames - The fields to retrieve.
+     * @returns {Object|null} The matching record object or null if not found.
+     **/
+    function singleId(sysId, fieldNames) {
+        const glideRecord = _create();
+        if (glideRecord.get(sysId)) {
+            return _toObject(glideRecord, fieldNames);
+        }
+        return null;
+    }
+
+    /**
+     * Updates an existing record.
+     * @param {string} sysId - The sys_id of the record.
+     * @param {Object} recordObject - The new data for the record.
+     * @returns {boolean} True if updated successfully, otherwise false.
+     **/
+    function update(sysId, recordObject) {
+        const glideRecordInit = _create();
+        if (glideRecordInit.get(sysId)) {
+            const glideRecord = _populate(glideRecordInit, recordObject);
+            if (glideRecord) {
+                return glideRecord.update();
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Creates a new GlideRecord instance for the specified table.
+     * @param {boolean} initialize - Whether to initialize the record.
+     * @returns {GlideRecord} The new GlideRecord instance.
+     **/
+    function _create(initialize) {
+        const glideRecord = new GlideRecord(tableName);
+        if (initialize) {
+            glideRecord.initialize();
+        }
+        return glideRecord;
+    }
+
+    /**
+     * Populates a GlideRecord with values from a given object.
+     * @param {GlideRecord} glideRecord - The GlideRecord instance to populate.
+     * @param {Object} recordObject - An object containing field values.
+     * @returns {GlideRecord} The populated GlideRecord instance.
+     **/
+    function _populate(glideRecord, recordObject) {
+        for (const fieldName in recordObject) {
+            if (glideRecord.isValidField(fieldName) && !fieldName.match(/^sys_/)) {
+                const element = glideRecord.getElement(fieldName);
+                const descriptor = element.getED();
+                const fieldType = descriptor.getInternalType();
+                let value = recordObject[fieldName] != null ? recordObject[fieldName] : '';
+                if (fieldType == 'currency2') {
+                    if (!value.toString().match(/^USD;.+/)) {
+                        value = 'USD;' + value;
+                    }
+                    glideRecord[fieldName].setDisplayValue(value);
+                } else if (fieldType == 'password') {
+                    glideRecord[fieldName].setDisplayValue(value);
+                } else {
+                    glideRecord.setValue(fieldName, value);
+                }
+            }
+        }
+        return glideRecord;
+    }
+
+    /**
+     * Converts a GlideRecord result set into an array of objects.
+     * @param {GlideRecord} glideRecord - The GlideRecord instance to iterate through.
+     * @param {string[]} fieldNames - Array of field names to include in the objects.
+     * @returns {Object[]} An array of objects representing the records.
+     **/
+    function _toArray(glideRecord, fieldNames) {
+        const array = [];
+        while (glideRecord._next()) {
+            array.push(_toObject(glideRecord, fieldNames));
+        }
+        return array;
+    }
+
+    /**
+     * Converts a GlideRecord into an object with specified fields.
+     * @param {GlideRecord} glideRecord - The GlideRecord instance.
+     * @param {string[]|string} [fieldNames] - The field names to include in the object.
+     * @returns {Object} An object representation of the record.
+     **/
+    function _toObject(glideRecord, fieldNames) {
+        fieldNames = fieldNames || [];
+        if (typeof fieldNames === 'string') {
+            fieldNames = fieldNames.split(',');
+        }
+        let recordObject = {};
+        if (fieldNames.length) {
+            if (fieldNames.length === 1) {
+                recordObject = _setField(recordObject, fieldNames[0], glideRecord);
+            } else {
+                fieldNames.forEach(function(fieldName) {
+                    recordObject = _setField(recordObject, fieldName, glideRecord);
+                });
+            }
+        } else {
+            for (var fieldName in glideRecord) {
+                recordObject = _setField(recordObject, fieldName, glideRecord);
+            }
+        }
+        return recordObject;
+    }
+
+    /**
+     * Sets a field value and display value in the record object.
+     * @param {Object} recordObject - The object to populate.
+     * @param {string} fieldName - The name of the field.
+     * @param {GlideRecord} glideRecord - The GlideRecord instance.
+     * @returns {Object} The updated record object.
+     **/
+    function _setField(recordObject, fieldName, glideRecord) {
+        if (glideRecord.isValidField(fieldName)) {
+            const value = glideRecord.getValue(fieldName);
+            const displayValue = glideRecord.getDisplayValue(fieldName);
+            recordObject[fieldName] = {
+                value: value != null ? value : '',
+                displayValue: displayValue != null ? displayValue : ''
+            };
+        }
+        return recordObject;
+    }
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-02-11 19:20:31</sys_created_on>
+        <sys_id>c545af1f53af5e10829a70c0a0490e56</sys_id>
+        <sys_mod_count>7</sys_mod_count>
+        <sys_name>GlideService</sys_name>
+        <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
+        <sys_update_name>sys_script_include_c545af1f53af5e10829a70c0a0490e56</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-02-11 21:58:55</sys_updated_on>
+    </sys_script_include>
+</record_update>

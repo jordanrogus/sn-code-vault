@@ -5,25 +5,30 @@
         <api_name>x_648117_codevault.DatabaseHelper</api_name>
         <caller_access/>
         <client_callable>false</client_callable>
-        <description>Utility functions to simplify and standardize certain common interactions with the ServiceNow database</description>
+        <description>Utility functions to simplify and standardize certain common interactions with the ServiceNow database.</description>
         <mobile_callable>false</mobile_callable>
         <name>DatabaseHelper</name>
         <sandbox_callable>false</sandbox_callable>
         <script><![CDATA[const DatabaseHelper = Class.create();
 DatabaseHelper.prototype = {
-    initialize: function() {
+    initialize: function () {
         this.tc = new x_648117_codevault.TypeChecker();
     },
 
     /**
-     * Retrieves a record from a table 
+     * Retrieves a record from a table
      * @param {string} tableName - Table to query
      * @param {string} sysId - Record sys_id to query
-     * @returns {GlideRecord object|null} - Retrieved record 
+     * @returns {GlideRecord object|null} - Retrieved record
      **/
-    fetchGlideRecord: function(tableName, sysId) {
+    fetchGlideRecord: function (tableName, sysId) {
         if (!gs.tableExists(tableName) || !this.tc.isSysId(sysId)) {
-            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
+            gs.error(
+                gs.getMessage(
+                    CONSTANTS.INVALID_PARAMS,
+                    JSON.stringify(arguments)
+                )
+            );
             return null;
         }
 
@@ -35,14 +40,19 @@ DatabaseHelper.prototype = {
     },
 
     /**
-     * Retrieves the display value from a record from a table 
+     * Retrieves the display value from a record from a table
      * @param {string} tableName - Table to query
      * @param {string} sysId - Record sys_id to query
      * @returns {string|null} - Record display value
      **/
-    fetchRecordDisplay: function(tableName, sysId) {
+    fetchRecordDisplay: function (tableName, sysId) {
         if (!gs.tableExists(tableName) || !this.tc.isSysId(sysId)) {
-            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
+            gs.error(
+                gs.getMessage(
+                    CONSTANTS.INVALID_PARAMS,
+                    JSON.stringify(arguments)
+                )
+            );
             return null;
         }
 
@@ -57,17 +67,27 @@ DatabaseHelper.prototype = {
      * Retrieves table records from a query. Must pass in a query
      * @param {string} tableName - Table to query
      * @param {string} encodedQuery - Encoded query to filter table against
-     * @returns {GlideRecord object|null} - Retrieved record(s) 
+     * @returns {GlideRecord object|null} - Retrieved record(s)
      **/
     fetchGlideRecords(tableName, encodedQuery) {
         if (!gs.tableExists(tableName) || !this.tc.isPopulatedString(encodedQuery)) {
-            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
+            gs.error(
+                gs.getMessage(
+                    CONSTANTS.INVALID_PARAMS,
+                    JSON.stringify(arguments)
+                )
+            );
             return null;
         }
 
         const recordsGr = new GlideRecord(tableName);
         if (!recordsGr.isEncodedQueryValid(encodedQuery)) {
-            gs.error(gs.getMessage(CONSTANTS.INVALID_ENCODED_QUERY, [encodedQuery, tableName]));
+            gs.error(
+                gs.getMessage(CONSTANTS.INVALID_ENCODED_QUERY, [
+                    encodedQuery,
+                    tableName,
+                ])
+            );
             return null;
         }
         recordsGr.addEncodedQuery(encodedQuery);
@@ -84,18 +104,28 @@ DatabaseHelper.prototype = {
      * @param {Array.<string>} array - Array of record sys_ids to filter against table
      * @returns {Array.<string>|null} - Array of records as display values
      **/
-    fetchRecordsDisplay: function(tableName, array) {
+    fetchRecordsDisplay: function (tableName, array) {
         if (!gs.tableExists(tableName) || !this.tc.isPopulatedArray(array)) {
-            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
+            gs.error(
+                gs.getMessage(
+                    CONSTANTS.INVALID_PARAMS,
+                    JSON.stringify(arguments)
+                )
+            );
             return null;
         }
         if (array.length > CONSTANTS.ARRAY_DISPLAY_TRANSLATION_MAX_LENGTH) {
-            gs.error(gs.getMessage(CONSTANTS.ARRAY_DISPLAY_TRANSLATION_MAX_LENGTH_REACHED, [tableName, CONSTANTS.ARRAY_DISPLAY_TRANSLATION_MAX_LENGTH]));
+            gs.error(
+                gs.getMessage(
+                    CONSTANTS.ARRAY_DISPLAY_TRANSLATION_MAX_LENGTH_REACHED,
+                    [tableName, CONSTANTS.ARRAY_DISPLAY_TRANSLATION_MAX_LENGTH]
+                )
+            );
             return null;
         }
 
         const recordDisplays = [];
-        const query = "sys_idIN" + array.toString();
+        const query = 'sys_idIN' + array.toString();
         const recordsGr = this.fetchGlideRecords(tableName, query);
         if (recordsGr) {
             while (recordsGr.next()) {
@@ -111,15 +141,25 @@ DatabaseHelper.prototype = {
      * @param {string} encodedQuery - Encoded query to use in check
      * @returns {boolean|null} - If the query against the table returned any records
      **/
-    hasRecords: function(tableName, encodedQuery) {
+    hasRecords: function (tableName, encodedQuery) {
         if (!gs.tableExists(tableName) || !this.tc.isPopulatedString(encodedQuery)) {
-            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
+            gs.error(
+                gs.getMessage(
+                    CONSTANTS.INVALID_PARAMS,
+                    JSON.stringify(arguments)
+                )
+            );
             return null;
         }
 
         const recordsGr = new GlideRecord(tableName);
         if (!recordsGr.isEncodedQueryValid(encodedQuery)) {
-            gs.error(gs.getMessage(CONSTANTS.INVALID_ENCODED_QUERY, [encodedQuery, tableName]));
+            gs.error(
+                gs.getMessage(CONSTANTS.INVALID_ENCODED_QUERY, [
+                    encodedQuery,
+                    tableName,
+                ])
+            );
             return null;
         }
         recordsGr.addEncodedQuery(encodedQuery);
@@ -134,16 +174,26 @@ DatabaseHelper.prototype = {
      * @param {string} [encodedQuery] - Encoded query to filter table against
      * @returns {Number|null}
      **/
-    fetchRecordCount: function(tableName, encodedQuery) {
+    fetchRecordCount: function (tableName, encodedQuery) {
         if (!gs.tableExists(tableName)) {
-            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
+            gs.error(
+                gs.getMessage(
+                    CONSTANTS.INVALID_PARAMS,
+                    JSON.stringify(arguments)
+                )
+            );
             return null;
         }
 
         var recordCountGa = new GlideAggregate(tableName);
         if (encodedQuery) {
             if (!this.tc.isString(encodedQuery)) {
-                gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
+                gs.error(
+                    gs.getMessage(
+                        CONSTANTS.INVALID_PARAMS,
+                        JSON.stringify(arguments)
+                    )
+                );
                 return null;
             }
             recordCountGa.addEncodedQuery(encodedQuery);
@@ -165,9 +215,14 @@ DatabaseHelper.prototype = {
      * @returns {string} obj.<fieldName>.value - Field value
      * @returns {string} obj.<fieldName>.displayValue - Field display value
      **/
-    transformGrToObj: function(sourceGr, fields) {
+    transformGrToObj: function (sourceGr, fields) {
         if (!this.tc.isGlideRecord(sourceGr)) {
-            gs.error(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
+            gs.error(
+                gs.getMessage(
+                    CONSTANTS.INVALID_PARAMS,
+                    JSON.stringify(arguments)
+                )
+            );
             return null;
         }
 
@@ -177,10 +232,16 @@ DatabaseHelper.prototype = {
         }
 
         const obj = {};
-        fields.forEach(field => {
+        fields.forEach((field) => {
             // Add empty data if field does not exist and log msg
             if (!sourceGr.isValidField(field)) {
-                gs.warn(gs.getMessage(CONSTANTS.INVALID_TABLE_FIELD, [field, sourceGr.getTableName(), sourceGr.getDisplayValue()]));
+                gs.warn(
+                    gs.getMessage(CONSTANTS.INVALID_TABLE_FIELD, [
+                        field,
+                        sourceGr.getTableName(),
+                        sourceGr.getDisplayValue(),
+                    ])
+                );
                 return;
             }
 
@@ -189,25 +250,36 @@ DatabaseHelper.prototype = {
             const fieldType = ed.getInternalType().toString(); // Get the field type's name
 
             if (isChoiceField) {
-                this._addElement(obj, field, gr.getValue(field), gr.getElement(field).getChoiceValue());
+                this._addElement(
+                    obj,
+                    field,
+                    gr.getValue(field),
+                    gr.getElement(field).getChoiceValue()
+                );
                 return;
             }
 
             if (fieldType === CONSTANTS.BOOLEAN_FIELD_TYPE) {
                 var boolValue = gr.getValue(field) == 1; // Raw boolean values are stored as a 0 (false) or a 1 (true)
-                this._addElement(obj, field, boolValue, "");
+                this._addElement(obj, field, boolValue, '');
                 return;
             }
 
             // Fields that should return a value and a display value
-            var displayValueFields = CONSTANTS.FIELD_TYPES_TO_RETURN_DISPLAY_VALUES;
+            var displayValueFields =
+                CONSTANTS.FIELD_TYPES_TO_RETURN_DISPLAY_VALUES;
             if (displayValueFields.indexOf(fieldType) > -1) {
-                this._addElement(obj, field, gr.getValue(field), gr.getDisplayValue(field));
+                this._addElement(
+                    obj,
+                    field,
+                    gr.getValue(field),
+                    gr.getDisplayValue(field)
+                );
                 return;
             }
 
             // Other field types
-            this._addElement(obj, field, gr.getValue(field), "");
+            this._addElement(obj, field, gr.getValue(field), '');
         });
         return obj;
     },
@@ -219,29 +291,30 @@ DatabaseHelper.prototype = {
      * @param {string} value - Field value to add
      * @param {string} displayValue - Field display value to add
      **/
-    _addElement: function(obj, fieldName, value, displayValue) {
-        value = value || "";
-        displayValue = displayValue || "";
+    _addElement: function (obj, fieldName, value, displayValue) {
+        value = value || '';
+        displayValue = displayValue || '';
 
         obj[fieldName] = {};
-        obj[fieldName]["value"] = value;
-        obj[fieldName]["displayValue"] = displayValue || value;
+        obj[fieldName]['value'] = value;
+        obj[fieldName]['displayValue'] = displayValue || value;
     },
 
-    type: 'DatabaseHelper'
-};]]></script>
+    type: 'DatabaseHelper',
+};
+]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-30 22:09:45</sys_created_on>
         <sys_id>ca8ea66953b21210829a70c0a0490ea1</sys_id>
-        <sys_mod_count>43</sys_mod_count>
+        <sys_mod_count>47</sys_mod_count>
         <sys_name>DatabaseHelper</sys_name>
         <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
-        <sys_policy>read</sys_policy>
+        <sys_policy/>
         <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
         <sys_update_name>sys_script_include_ca8ea66953b21210829a70c0a0490ea1</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2025-01-09 00:07:38</sys_updated_on>
+        <sys_updated_on>2025-02-11 21:58:55</sys_updated_on>
     </sys_script_include>
     <sys_es_latest_script action="INSERT_OR_UPDATE">
         <id>ca8ea66953b21210829a70c0a0490ea1</id>
