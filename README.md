@@ -16,3 +16,5 @@ ChronoManager</br>
 JsonHandler</br>
 StringHandler</br>
 OrderHierarchy</br>
+GlideService (Courtesy of Mr. Arbour)
+GlideServiceAjax (Courtesy of Mr. Arbour)
