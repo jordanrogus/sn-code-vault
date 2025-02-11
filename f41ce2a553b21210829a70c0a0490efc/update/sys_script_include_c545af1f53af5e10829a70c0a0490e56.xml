@@ -57,9 +57,9 @@ Courtsey of David Arbour.</description>
     /**
      * Retrieves multiple records based on an encoded query.
      * @param {string} encodedQuery - The query string.
-     * @param {string[]} fieldNames - The fields to retrieve.
+     * @param {Array.<string>} fieldNames - The fields to retrieve.
      * @param {number} rowCount - The maximum number of records to return.
-     * @returns {Object[]} An array of record objects.
+     * @returns {Array.<Object>} An array of record objects.
      **/
     function multiple(encodedQuery, fieldNames, rowCount) {
         encodedQuery = encodedQuery ? encodedQuery.toString() : '';
@@ -105,7 +105,7 @@ Courtsey of David Arbour.</description>
     /**
      * Retrieves a single record matching the query.
      * @param {string} encodedQuery - The query string.
-     * @param {string[]} fieldNames - The fields to retrieve.
+     * @param {Array.<string>} fieldNames - The fields to retrieve.
      * @returns {Object|null} The matching record object or null if not found.
      **/
     function single(encodedQuery, fieldNames) {
@@ -123,7 +123,7 @@ Courtsey of David Arbour.</description>
     /**
      * Retrieves a single record by sys_id.
      * @param {string} sysId - The sys_id of the record.
-     * @param {string[]} fieldNames - The fields to retrieve.
+     * @param {Array.<string>} fieldNames - The fields to retrieve.
      * @returns {Object|null} The matching record object or null if not found.
      **/
     function singleId(sysId, fieldNames) {
@@ -195,8 +195,8 @@ Courtsey of David Arbour.</description>
     /**
      * Converts a GlideRecord result set into an array of objects.
      * @param {GlideRecord} glideRecord - The GlideRecord instance to iterate through.
-     * @param {string[]} fieldNames - Array of field names to include in the objects.
-     * @returns {Object[]} An array of objects representing the records.
+     * @param {Array.<string>} fieldNames - Array of field names to include in the objects.
+     * @returns {Array.<Object>} An array of objects representing the records.
      **/
     function _toArray(glideRecord, fieldNames) {
         const array = [];
@@ -209,7 +209,7 @@ Courtsey of David Arbour.</description>
     /**
      * Converts a GlideRecord into an object with specified fields.
      * @param {GlideRecord} glideRecord - The GlideRecord instance.
-     * @param {string[]|string} [fieldNames] - The field names to include in the object.
+     * @param {Array.<string>|string} [fieldNames] - The field names to include in the object.
      * @returns {Object} An object representation of the record.
      **/
     function _toObject(glideRecord, fieldNames) {
@@ -257,13 +257,13 @@ Courtsey of David Arbour.</description>
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2025-02-11 19:20:31</sys_created_on>
         <sys_id>c545af1f53af5e10829a70c0a0490e56</sys_id>
-        <sys_mod_count>7</sys_mod_count>
+        <sys_mod_count>8</sys_mod_count>
         <sys_name>GlideService</sys_name>
         <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
         <sys_policy/>
         <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
         <sys_update_name>sys_script_include_c545af1f53af5e10829a70c0a0490e56</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2025-02-11 21:58:55</sys_updated_on>
+        <sys_updated_on>2025-02-11 22:30:45</sys_updated_on>
     </sys_script_include>
 </record_update>
