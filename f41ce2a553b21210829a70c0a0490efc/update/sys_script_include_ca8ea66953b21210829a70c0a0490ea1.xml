@@ -11,7 +11,7 @@
         <sandbox_callable>false</sandbox_callable>
         <script><![CDATA[const DatabaseHelper = Class.create();
 DatabaseHelper.prototype = {
-    initialize: function () {
+    initialize: function() {
         this.tc = new x_648117_codevault.TypeChecker();
     },
 
@@ -19,9 +19,9 @@ DatabaseHelper.prototype = {
      * Retrieves a record from a table
      * @param {string} tableName - Table to query
      * @param {string} sysId - Record sys_id to query
-     * @returns {GlideRecord object|null} - Retrieved record
+     * @returns {GlideRecord|null} - Retrieved record
      **/
-    fetchGlideRecord: function (tableName, sysId) {
+    fetchGlideRecord: function(tableName, sysId) {
         if (!gs.tableExists(tableName) || !this.tc.isSysId(sysId)) {
             gs.error(
                 gs.getMessage(
@@ -45,7 +45,7 @@ DatabaseHelper.prototype = {
      * @param {string} sysId - Record sys_id to query
      * @returns {string|null} - Record display value
      **/
-    fetchRecordDisplay: function (tableName, sysId) {
+    fetchRecordDisplay: function(tableName, sysId) {
         if (!gs.tableExists(tableName) || !this.tc.isSysId(sysId)) {
             gs.error(
                 gs.getMessage(
@@ -67,7 +67,7 @@ DatabaseHelper.prototype = {
      * Retrieves table records from a query. Must pass in a query
      * @param {string} tableName - Table to query
      * @param {string} encodedQuery - Encoded query to filter table against
-     * @returns {GlideRecord object|null} - Retrieved record(s)
+     * @returns {GlideRecord|null} - Retrieved record(s)
      **/
     fetchGlideRecords(tableName, encodedQuery) {
         if (!gs.tableExists(tableName) || !this.tc.isPopulatedString(encodedQuery)) {
@@ -104,7 +104,7 @@ DatabaseHelper.prototype = {
      * @param {Array.<string>} array - Array of record sys_ids to filter against table
      * @returns {Array.<string>|null} - Array of records as display values
      **/
-    fetchRecordsDisplay: function (tableName, array) {
+    fetchRecordsDisplay: function(tableName, array) {
         if (!gs.tableExists(tableName) || !this.tc.isPopulatedArray(array)) {
             gs.error(
                 gs.getMessage(
@@ -141,7 +141,7 @@ DatabaseHelper.prototype = {
      * @param {string} encodedQuery - Encoded query to use in check
      * @returns {boolean|null} - If the query against the table returned any records
      **/
-    hasRecords: function (tableName, encodedQuery) {
+    hasRecords: function(tableName, encodedQuery) {
         if (!gs.tableExists(tableName) || !this.tc.isPopulatedString(encodedQuery)) {
             gs.error(
                 gs.getMessage(
@@ -172,9 +172,9 @@ DatabaseHelper.prototype = {
      * Returns table record count
      * @param {string} tableName - Table to query
      * @param {string} [encodedQuery] - Encoded query to filter table against
-     * @returns {Number|null}
+     * @returns {number|null}
      **/
-    fetchRecordCount: function (tableName, encodedQuery) {
+    fetchRecordCount: function(tableName, encodedQuery) {
         if (!gs.tableExists(tableName)) {
             gs.error(
                 gs.getMessage(
@@ -207,15 +207,75 @@ DatabaseHelper.prototype = {
     },
 
     /**
+     * Updates a GlideRecord. Function courtesy of Mr. Pedersen
+     * @param {GlideRecord} record - Record to update
+     * @param {Object} dataObj - An object where the keys match the columns on the GlideRecord
+     * @returns {GlideRecord|null}
+     **/
+    updateRecord: function(record, dataObj) {
+        if (!this.tc.isGlideRecord(record) || !this.tc.isPopulatedObject(dataObj)) {
+            gs.error(
+                gs.getMessage(
+                    CONSTANTS.INVALID_PARAMS,
+                    JSON.stringify(arguments)
+                )
+            );
+            return null;
+        }
+
+        record = this._mapDataObject(record, dataObj);
+        record.update();
+    },
+
+    /**
+     * Updates a GlideRecord. Function courtesy of Mr. Pedersen
+     * @param {GlideRecord} records - Records to update
+     * @param {Object} dataObj - An object where the keys match the columns on the GlideRecord
+     * @returns {GlideRecord|null}
+     **/
+    updateMultiple: function(records, updateObj) {
+        if (!this.tc.isGlideRecord(record) || !this.tc.isPopulatedObject(dataObj)) {
+            gs.error(
+                gs.getMessage(
+                    CONSTANTS.INVALID_PARAMS,
+                    JSON.stringify(arguments)
+                )
+            );
+            return null;
+        }
+
+        records = this._mapDataObject(records, updateObj);
+        records.updateMultiple();
+    },
+
+    /**
+     * Updates a GlideRecord. Function courtesy of Mr. Pedersen
+     * @param {GlideRecord} record - Record to update
+     * @param {Object} dataObj - An object where the keys match the columns on the GlideRecord
+     * @returns {GlideRecord}
+     **/
+    _mapDataObject: function(record, dataObj) {
+        for (const field in dataObj) {
+            if (Object.prototype.hasOwnProperty.call(dataObj, field)) {
+                const element = dataObj[field];
+                if (record.isValidField(element)) {
+                    record.setValue(field, element);
+                }
+            }
+        }
+        return record;
+    },
+
+    /**
      * Transforms a GlideRecord object into a JS object
      * @param {GlideRecord object} sourceGr - GlideRecord to objectify
      * @param {Array.<string>} [fields] - Field names to include in the resulting object. If not passed in all fields will be returned
-     * @returns {object|null} obj - Transformed object
+     * @returns {Object|null} obj - Transformed object
      * @returns {string} obj.<fieldName> - Record field name
      * @returns {string} obj.<fieldName>.value - Field value
      * @returns {string} obj.<fieldName>.displayValue - Field display value
      **/
-    transformGrToObj: function (sourceGr, fields) {
+    transformGrToObj: function(sourceGr, fields) {
         if (!this.tc.isGlideRecord(sourceGr)) {
             gs.error(
                 gs.getMessage(
@@ -286,12 +346,12 @@ DatabaseHelper.prototype = {
 
     /**
      * Adds data to a passed in object
-     * @param {object} obj - Object to append data to
+     * @param {Object} obj - Object to append data to
      * @param {string} fieldName - Field to add
      * @param {string} value - Field value to add
      * @param {string} displayValue - Field display value to add
      **/
-    _addElement: function (obj, fieldName, value, displayValue) {
+    _addElement: function(obj, fieldName, value, displayValue) {
         value = value || '';
         displayValue = displayValue || '';
 
@@ -301,20 +361,19 @@ DatabaseHelper.prototype = {
     },
 
     type: 'DatabaseHelper',
-};
-]]></script>
+};]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-30 22:09:45</sys_created_on>
         <sys_id>ca8ea66953b21210829a70c0a0490ea1</sys_id>
-        <sys_mod_count>47</sys_mod_count>
+        <sys_mod_count>49</sys_mod_count>
         <sys_name>DatabaseHelper</sys_name>
         <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
         <sys_policy/>
         <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
         <sys_update_name>sys_script_include_ca8ea66953b21210829a70c0a0490ea1</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2025-02-11 21:58:55</sys_updated_on>
+        <sys_updated_on>2025-02-11 22:31:46</sys_updated_on>
     </sys_script_include>
     <sys_es_latest_script action="INSERT_OR_UPDATE">
         <id>ca8ea66953b21210829a70c0a0490ea1</id>

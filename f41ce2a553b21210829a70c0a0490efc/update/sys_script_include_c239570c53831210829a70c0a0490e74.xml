@@ -18,7 +18,7 @@ JsonHandler.prototype = {
     /**
      * Parses a JSON string and returns the corresponding JavaScript object
      * @param {string} jsonString - The JSON string to parse
-     * @returns {object|null} - The parsed JavaScript object or null if parsing fails
+     * @returns {Object|null} - The parsed JavaScript object or null if parsing fails
      **/
     parseJson: function (jsonString) {
         try {
@@ -56,7 +56,7 @@ JsonHandler.prototype = {
 
     /**
      * Pretty prints a JSON object
-     * @param {object} jsonObj - The JSON object to pretty print
+     * @param {Object} jsonObj - The JSON object to pretty print
      * @param {integer} [spacing=4] - How many space characters to use as white space. Must be between 1 and 10
      * @returns {string|null} - The pretty printed JSON string
      **/
@@ -109,14 +109,14 @@ JsonHandler.prototype = {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2025-01-07 19:36:44</sys_created_on>
         <sys_id>c239570c53831210829a70c0a0490e74</sys_id>
-        <sys_mod_count>15</sys_mod_count>
+        <sys_mod_count>16</sys_mod_count>
         <sys_name>JsonHandler</sys_name>
         <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
         <sys_policy/>
         <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
         <sys_update_name>sys_script_include_c239570c53831210829a70c0a0490e74</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2025-02-11 21:58:56</sys_updated_on>
+        <sys_updated_on>2025-02-11 22:33:01</sys_updated_on>
     </sys_script_include>
     <sys_es_latest_script action="INSERT_OR_UPDATE">
         <id>c239570c53831210829a70c0a0490e74</id>
