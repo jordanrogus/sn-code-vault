@@ -11,7 +11,7 @@
         <sandbox_callable>false</sandbox_callable>
         <script><![CDATA[const RecordCloner = Class.create();
 RecordCloner.prototype = {
-    initialize: function () {
+    initialize: function() {
         this.tc = new x_648117_codevault.TypeChecker();
     },
 
@@ -20,28 +20,16 @@ RecordCloner.prototype = {
      * @param {string} tableName - Name of the table containing the record to duplicate
      * @param {string} sourceSysId - Sys_id of the record to duplicate
      * @param {Object} [modifications] - Optional object of field-value pairs to modify in the new record
-     * @returns {string|null} - Sys_id of the new record, or null if cloning fails
+     * @returns {string} - Sys_id of the new record
      **/
-    cloneRecord: function (tableName, sourceSysId, modifications) {
+    cloneRecord: function(tableName, sourceSysId, modifications) {
         if (!gs.tableExists(tableName) || !this.tc.isSysId(sourceSysId)) {
-            gs.error(
-                gs.getMessage(
-                    CONSTANTS.INVALID_PARAMS,
-                    JSON.stringify(arguments)
-                )
-            );
-            return null;
+            throw new TypeError(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
         }
 
         const sourceGr = new GlideRecord(tableName);
         if (!sourceGr.get(sourceSysId)) {
-            gs.error(
-                gs.getMessage(CONSTANTS.RECORD_CLONE_SOURCE_RECORD_NOT_FOUND, [
-                    sourceSysId,
-                    tableName,
-                ])
-            );
-            return null;
+            throw new Error(gs.getMessage(CONSTANTS.RECORD_CLONE_SOURCE_RECORD_NOT_FOUND, [sourceSysId, tableName]));
         }
 
         const clonedGr = new GlideRecord(tableName);
@@ -85,13 +73,7 @@ RecordCloner.prototype = {
 
         const clonedSysId = clonedGr.insert();
         if (!clonedSysId) {
-            gs.error(
-                gs.getMessage(CONSTANTS.RECORD_CLONE_ERROR, [
-                    sourceSysId,
-                    tableName,
-                ])
-            );
-            return null;
+            throw new Error(gs.getMessage(CONSTANTS.RECORD_CLONE_ERROR, [sourceSysId, tableName]));
         }
         return clonedSysId;
     },
@@ -101,7 +83,7 @@ RecordCloner.prototype = {
      * @param {string} fieldName - Name of the field to check
      * @returns {boolean} - If the field should be excluded
      **/
-    _isExcludedField: function (fieldName) {
+    _isExcludedField: function(fieldName) {
         const excludedFields = CONSTANTS.RECORD_CLONE_EXCLUDED_FIELDS;
         return (
             excludedFields.includes(fieldName) || fieldName.startsWith('sys_')
@@ -109,20 +91,19 @@ RecordCloner.prototype = {
     },
 
     type: 'RecordCloner',
-};
-]]></script>
+};]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-31 17:05:22</sys_created_on>
         <sys_id>dd23f2b9537e5210829a70c0a0490e77</sys_id>
-        <sys_mod_count>35</sys_mod_count>
+        <sys_mod_count>42</sys_mod_count>
         <sys_name>RecordCloner</sys_name>
         <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
         <sys_policy/>
         <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
         <sys_update_name>sys_script_include_dd23f2b9537e5210829a70c0a0490e77</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2025-02-11 21:58:56</sys_updated_on>
+        <sys_updated_on>2025-04-14 20:03:21</sys_updated_on>
     </sys_script_include>
     <sys_es_latest_script action="INSERT_OR_UPDATE">
         <id>dd23f2b9537e5210829a70c0a0490e77</id>

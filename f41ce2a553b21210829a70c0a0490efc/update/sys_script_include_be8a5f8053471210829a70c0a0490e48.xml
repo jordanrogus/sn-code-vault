@@ -11,7 +11,7 @@
         <sandbox_callable>false</sandbox_callable>
         <script><![CDATA[const XmlJsonConverter = Class.create();
 XmlJsonConverter.prototype = {
-    initialize: function () {
+    initialize: function() {
         this.tc = new x_648117_codevault.TypeChecker();
         this.stringHandler = new x_648117_codevault.StringHandler();
     },
@@ -19,17 +19,11 @@ XmlJsonConverter.prototype = {
     /**
      * Translates XML to JSON
      * @param {string} xmlString - XML string to translate
-     * @returns {Object|null} - Translated JSON
+     * @returns {Object} - Translated JSON
      **/
-    xmlToJson: function (xmlString) {
+    xmlToJson: function(xmlString) {
         if (!this.tc.isXmlString(xmlString)) {
-            gs.error(
-                gs.getMessage(
-                    CONSTANTS.INVALID_PARAMS,
-                    JSON.stringify(arguments)
-                )
-            );
-            return null;
+            throw new TypeError(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
         }
         return gs.xmlToJSON(xmlString);
     },
@@ -38,17 +32,11 @@ XmlJsonConverter.prototype = {
      * Translates JSON to XML
      * @param {Object} jsonObj - JSON object to translate
      * @param {string} [rootElement] - Optional XML root element name to use
-     * @returns {string|null} - Translated XML
+     * @returns {string} - Translated XML
      **/
-    jsonToXml: function (jsonObj, rootElement) {
+    jsonToXml: function(jsonObj, rootElement) {
         if (!this.tc.isObject(jsonObj)) {
-            gs.error(
-                gs.getMessage(
-                    CONSTANTS.INVALID_PARAMS,
-                    JSON.stringify(arguments)
-                )
-            );
-            return null;
+            throw new TypeError(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
         }
 
         rootElement = rootElement || CONSTANTS.DEFAULT_JSON_ROOT_ELEMENT;
@@ -63,7 +51,7 @@ XmlJsonConverter.prototype = {
      * @param {Object} jsonObj - The JSON object or value to convert
      * @returns {string} - The resulting XML string
      **/
-    _convertToXml: function (jsonObj) {
+    _convertToXml: function(jsonObj) {
         let xml = '';
 
         for (let key in jsonObj) {
@@ -75,8 +63,8 @@ XmlJsonConverter.prototype = {
                     xml += '</' + key + '>';
                 } else {
                     xml += '<' + key + '>' +
-                    this.stringHandler.escapeXml(value.toString()) +
-                    '</' + key + '>';
+                        this.stringHandler.escapeXml(value.toString()) +
+                        '</' + key + '>';
                 }
             }
         }
@@ -84,20 +72,19 @@ XmlJsonConverter.prototype = {
     },
 
     type: 'XmlJsonConverter',
-};
-]]></script>
+};]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2025-01-07 19:42:01</sys_created_on>
         <sys_id>be8a5f8053471210829a70c0a0490e48</sys_id>
-        <sys_mod_count>23</sys_mod_count>
+        <sys_mod_count>30</sys_mod_count>
         <sys_name>XmlJsonConverter</sys_name>
         <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
         <sys_policy/>
         <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
         <sys_update_name>sys_script_include_be8a5f8053471210829a70c0a0490e48</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2025-02-11 22:33:59</sys_updated_on>
+        <sys_updated_on>2025-04-14 20:03:21</sys_updated_on>
     </sys_script_include>
     <sys_es_latest_script action="INSERT_OR_UPDATE">
         <id>be8a5f8053471210829a70c0a0490e48</id>

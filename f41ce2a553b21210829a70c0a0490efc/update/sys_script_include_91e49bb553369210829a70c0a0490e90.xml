@@ -11,7 +11,7 @@
         <sandbox_callable>false</sandbox_callable>
         <script><![CDATA[const ArithmeticOperation = Class.create();
 ArithmeticOperation.prototype = {
-    initialize: function () {
+    initialize: function() {
         this.tc = new x_648117_codevault.TypeChecker();
     },
 
@@ -20,21 +20,15 @@ ArithmeticOperation.prototype = {
      * @example .sumElements([100,50,25]) results in (100+50+25) or 175
      *
      * @param {Array.<string>} array - Array of values to add
-     * @returns {number|null}
+     * @returns {number}
      **/
-    sumElements: function (array) {
+    sumElements: function(array) {
         const filteredArray = this._sanitizeForArithmetic(array);
         if (!filteredArray) {
-            gs.error(
-                gs.getMessage(
-                    CONSTANTS.INVALID_PARAMS,
-                    JSON.stringify(arguments)
-                )
-            );
-            return null;
+            throw new TypeError(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
         }
         return filteredArray
-            .reduce(function (total, num) {
+            .reduce(function(total, num) {
                 return parseFloat(total) + parseFloat(num);
             }, 0)
             .toFixed(2); // Default to 0 to start
@@ -45,24 +39,18 @@ ArithmeticOperation.prototype = {
      * @example .subtractElements([100,50,25]) results in (100-50-25) or 25
      *
      * @param {Array.<string>} array - Array of values to subtract
-     * @returns {number|null}
+     * @returns {number}
      **/
-    subtractElements: function (array) {
+    subtractElements: function(array) {
         const filteredArray = this._sanitizeForArithmetic(array);
         if (!filteredArray) {
-            gs.error(
-                gs.getMessage(
-                    CONSTANTS.INVALID_PARAMS,
-                    JSON.stringify(arguments)
-                )
-            );
-            return null;
+            throw new TypeError(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
         }
         if (filteredArray.length === 1) {
             return parseFloat(filteredArray[0]).toFixed(2);
         }
         return filteredArray
-            .reduce(function (total, num) {
+            .reduce(function(total, num) {
                 return parseFloat(total) - parseFloat(num);
             })
             .toFixed(2);
@@ -73,18 +61,12 @@ ArithmeticOperation.prototype = {
      * @example .divideElements([100,50,25]) results in (100/50/25) which is (100/50) = 2/25 = 0.08
      *
      * @param {Array.<string>} array - Array of values to divide
-     * @returns {number|null} - Null if invalid params or division by 0
+     * @returns {number} - Null if invalid params or division by 0
      **/
-    divideElements: function (array) {
+    divideElements: function(array) {
         const filteredArray = this._sanitizeForArithmetic(array);
         if (!filteredArray) {
-            gs.error(
-                gs.getMessage(
-                    CONSTANTS.INVALID_PARAMS,
-                    JSON.stringify(arguments)
-                )
-            );
-            return null;
+            throw new TypeError(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
         }
         if (filteredArray.length === 1) {
             if (parseFloat(filteredArray[0]) === 0) {
@@ -93,7 +75,7 @@ ArithmeticOperation.prototype = {
             return parseFloat(filteredArray[0]).toFixed(2);
         }
 
-        const result = filteredArray.reduce(function (total, num) {
+        const result = filteredArray.reduce(function(total, num) {
             const parsedTotal = parseFloat(total);
             const parsedNum = parseFloat(num);
 
@@ -121,24 +103,18 @@ ArithmeticOperation.prototype = {
      * @example .multiplyElements([100,50,25]) results in (100*50*25) which is (100*50) = 5000*25 = 125000
      *
      * @param {Array.<string>} array - Array of values to multiply
-     * @returns {number|null}
+     * @returns {number}
      **/
-    multiplyElements: function (array) {
+    multiplyElements: function(array) {
         const filteredArray = this._sanitizeForArithmetic(array);
         if (!filteredArray) {
-            gs.error(
-                gs.getMessage(
-                    CONSTANTS.INVALID_PARAMS,
-                    JSON.stringify(arguments)
-                )
-            );
-            return null;
+            throw new TypeError(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
         }
         if (filteredArray.length === 1) {
             return parseFloat(filteredArray[0]).toFixed(2);
         }
         return filteredArray
-            .reduce(function (total, num) {
+            .reduce(function(total, num) {
                 return parseFloat(total) * parseFloat(num);
             })
             .toFixed(2);
@@ -153,20 +129,15 @@ ArithmeticOperation.prototype = {
      * @param {Array.<string>} array - Array to filter
      * @returns {Array.<string>|null} - Filtered array
      **/
-    _sanitizeForArithmetic: function (array) {
+    _sanitizeForArithmetic: function(array) {
         if (!this.tc.isPopulatedArray(array)) {
             return null;
         }
         if (array.length > CONSTANTS.ARITHMETIC_ARRAY_MAX_LENGTH) {
-            gs.error(
-                gs.getMessage(CONSTANTS.ARITHMETIC_ARRAY_MAX_LENGTH_REACHED, [
-                    CONSTANTS.ARITHMETIC_ARRAY_MAX_LENGTH,
-                ])
-            );
-            return null;
+            throw new Error(gs.getMessage(CONSTANTS.ARITHMETIC_ARRAY_MAX_LENGTH_REACHED, [CONSTANTS.ARITHMETIC_ARRAY_MAX_LENGTH]));
         }
         return array.filter(
-            function (element) {
+            function(element) {
                 return (
                     this.tc.isParsableAsNumber(element) &&
                     this.tc.isFiniteNumber(parseFloat(element))
@@ -176,20 +147,19 @@ ArithmeticOperation.prototype = {
     },
 
     type: 'ArithmeticOperation',
-};
-]]></script>
+};]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-31 19:31:16</sys_created_on>
         <sys_id>91e49bb553369210829a70c0a0490e90</sys_id>
-        <sys_mod_count>38</sys_mod_count>
+        <sys_mod_count>45</sys_mod_count>
         <sys_name>ArithmeticOperation</sys_name>
         <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
         <sys_policy/>
         <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
         <sys_update_name>sys_script_include_91e49bb553369210829a70c0a0490e90</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2025-02-11 22:31:08</sys_updated_on>
+        <sys_updated_on>2025-04-14 20:03:21</sys_updated_on>
     </sys_script_include>
     <sys_es_latest_script action="INSERT_OR_UPDATE">
         <id>91e49bb553369210829a70c0a0490e90</id>

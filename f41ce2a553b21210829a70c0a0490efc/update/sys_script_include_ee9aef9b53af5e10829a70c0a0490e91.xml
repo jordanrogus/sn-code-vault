@@ -12,15 +12,14 @@ Courtsey of David Arbour.</description>
         <name>GlideServiceAjax</name>
         <sandbox_callable>false</sandbox_callable>
         <script><![CDATA[var GlideServiceAjax = Class.create();
-
 GlideServiceAjax.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
 
-  /**
-   * Inserts a new record into the specified table.
-   * @param {string} sysparm_table_name - The table for the new record.
-   * @param {Object} sysparm_record_object - The data for the new record.
-   * @returns {string} The sys_id of the newly inserted record or false on failure.
-   */
+    /**
+     * Inserts a new record into the specified table.
+     * @param {string} sysparm_table_name - The table for the new record.
+     * @param {Object} sysparm_record_object - The data for the new record.
+     * @returns {string} The sys_id of the newly inserted record or false on failure.
+     */
     insert: function() {
         const tableName = this.getParameter('sysparm_table_name');
         const recordObject = this.getParameter('sysparm_record_object');
@@ -28,14 +27,14 @@ GlideServiceAjax.prototype = Object.extendsObject(global.AbstractAjaxProcessor, 
         return new GlideService(tableName).insert(JSON.parse(recordObject));
     },
 
-  /**
-   * Retrieves multiple records based on an encoded query.
-   * @param {string} sysparm_table_name - The table for the new record.
-   * @param {string} sysparm_encoded_query - The query string.
-   * @param {string[]} sysparm_field_names - The fields to retrieve.
-   * @param {number} sysparm_row_count - The maximum number of records to return.
-   * @returns {string} A JSON string representing the retrieved records.
-   */
+    /**
+     * Retrieves multiple records based on an encoded query.
+     * @param {string} sysparm_table_name - The table for the new record.
+     * @param {string} sysparm_encoded_query - The query string.
+     * @param {string[]} sysparm_field_names - The fields to retrieve.
+     * @param {number} sysparm_row_count - The maximum number of records to return.
+     * @returns {string} A JSON string representing the retrieved records.
+     */
     multiple: function() {
         const tableName = this.getParameter('sysparm_table_name');
         const encodedQuery = this.getParameter('sysparm_encoded_query');
@@ -46,13 +45,13 @@ GlideServiceAjax.prototype = Object.extendsObject(global.AbstractAjaxProcessor, 
         return JSON.stringify(records);
     },
 
-  /**
-   * Retrieves a single record based on an encoded query.
-   * @param {string} sysparm_table_name - The table for the new record.
-   * @param {string} sysparm_encoded_query - The query string.
-   * @param {Array.<string>} sysparm_field_names - The fields to retrieve.
-   * @returns {string} A JSON string representing the retrieved record.
-   */
+    /**
+     * Retrieves a single record based on an encoded query.
+     * @param {string} sysparm_table_name - The table for the new record.
+     * @param {string} sysparm_encoded_query - The query string.
+     * @param {Array.<string>} sysparm_field_names - The fields to retrieve.
+     * @returns {string} A JSON string representing the retrieved record.
+     */
     single: function() {
         const tableName = this.getParameter('sysparm_table_name');
         const encodedQuery = this.getParameter('sysparm_encoded_query');
@@ -62,13 +61,13 @@ GlideServiceAjax.prototype = Object.extendsObject(global.AbstractAjaxProcessor, 
         return JSON.stringify(records);
     },
 
-  /**
-   * Retrieves a single record by sys_id.
-   * @param {string} sysparm_table_name - The table for the new record.
-   * @param {string} sysparm_sys_id - The sys_id of the record.
-   * @param {Array.<string>} sysparm_field_names - The fields to retrieve.
-   * @returns {string} A JSON string representing the retrieved record.
-   */
+    /**
+     * Retrieves a single record by sys_id.
+     * @param {string} sysparm_table_name - The table for the new record.
+     * @param {string} sysparm_sys_id - The sys_id of the record.
+     * @param {Array.<string>} sysparm_field_names - The fields to retrieve.
+     * @returns {string} A JSON string representing the retrieved record.
+     */
     singleId: function() {
         const tableName = this.getParameter('sysparm_table_name');
         const sysId = this.getParameter('sysparm_sys_id');
@@ -78,13 +77,13 @@ GlideServiceAjax.prototype = Object.extendsObject(global.AbstractAjaxProcessor, 
         return JSON.stringify(recordObject);
     },
 
-  /**
-   * Updates a record with the specified sys_id.
-   * @param {string} sysparm_table_name - The table for the new record.
-   * @param {string} sysparm_sys_id - The sys_id of the record.
-   * @param {Object} sysparm_record_object - The data for the new record.
-   * @returns {string} The sys_id of the updated record.
-   */
+    /**
+     * Updates a record with the specified sys_id.
+     * @param {string} sysparm_table_name - The table for the new record.
+     * @param {string} sysparm_sys_id - The sys_id of the record.
+     * @param {Object} sysparm_record_object - The data for the new record.
+     * @returns {string} The sys_id of the updated record.
+     */
     update: function() {
         const tableName = this.getParameter('sysparm_table_name');
         const sysId = this.getParameter('sysparm_sys_id');
@@ -99,13 +98,13 @@ GlideServiceAjax.prototype = Object.extendsObject(global.AbstractAjaxProcessor, 
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2025-02-11 19:43:51</sys_created_on>
         <sys_id>ee9aef9b53af5e10829a70c0a0490e91</sys_id>
-        <sys_mod_count>7</sys_mod_count>
+        <sys_mod_count>12</sys_mod_count>
         <sys_name>GlideServiceAjax</sys_name>
         <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
         <sys_policy/>
         <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
         <sys_update_name>sys_script_include_ee9aef9b53af5e10829a70c0a0490e91</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2025-02-11 22:32:34</sys_updated_on>
+        <sys_updated_on>2025-04-14 20:03:22</sys_updated_on>
     </sys_script_include>
 </record_update>

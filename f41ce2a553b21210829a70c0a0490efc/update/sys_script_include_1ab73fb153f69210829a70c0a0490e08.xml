@@ -11,7 +11,7 @@
         <sandbox_callable>false</sandbox_callable>
         <script><![CDATA[const DuplicateRecord = Class.create();
 DuplicateRecord.prototype = {
-    initialize: function () {
+    initialize: function() {
         this.tc = new x_648117_codevault.TypeChecker();
     },
 
@@ -20,55 +20,39 @@ DuplicateRecord.prototype = {
      * @param {string} tableName - Table to query
      * @param {string} encodedQuery - Query to run to find duplicate
      * @param {string} currentRecordSysId - Record id to check against
-     * @returns {GlideRecord|boolean|null} - Duplicate record if found, false if no duplicate is found, or null if parameters or query are invalid
+     * @returns {GlideRecord|boolean} - Duplicate record if found or false if no duplicate is found
      **/
-    getDuplicateRecord: function (tableName, encodedQuery, currentRecordSysId) {
+    getDuplicateRecord: function(tableName, encodedQuery, currentRecordSysId) {
         if (!gs.tableExists(tableName) || !this.tc.isPopulatedString(encodedQuery) || !this.tc.isSysId(currentRecordSysId)) {
-            gs.error(
-                gs.getMessage(
-                    CONSTANTS.INVALID_PARAMS,
-                    JSON.stringify(arguments)
-                )
-            );
-            return null;
+            throw new TypeError(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
         }
 
         const dupRecordCheckGr = new GlideRecord(tableName);
         if (!dupRecordCheckGr.isEncodedQueryValid(encodedQuery)) {
-            gs.error(
-                gs.getMessage(CONSTANTS.INVALID_ENCODED_QUERY, [
-                    encodedQuery,
-                    tableName,
-                ])
-            );
-            return null;
+            throw new Error(gs.getMessage(CONSTANTS.INVALID_ENCODED_QUERY, [encodedQuery, tableName]));
         }
         dupRecordCheckGr.addEncodedQuery(encodedQuery);
         dupRecordCheckGr.query();
-        if (
-            dupRecordCheckGr.next() &&
-            dupRecordCheckGr.getUniqueValue() !== currentRecordSysId
-        ) {
+        if (dupRecordCheckGr.next() && dupRecordCheckGr.getUniqueValue() !== currentRecordSysId) {
             return dupRecordCheckGr;
         }
         return false;
     },
 
     type: 'DuplicateRecord',
-};
-]]></script>
+};]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-31 22:03:11</sys_created_on>
         <sys_id>1ab73fb153f69210829a70c0a0490e08</sys_id>
-        <sys_mod_count>17</sys_mod_count>
+        <sys_mod_count>23</sys_mod_count>
         <sys_name>DuplicateFinder</sys_name>
         <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
         <sys_policy/>
         <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
         <sys_update_name>sys_script_include_1ab73fb153f69210829a70c0a0490e08</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2025-02-11 22:27:19</sys_updated_on>
+        <sys_updated_on>2025-04-14 20:03:21</sys_updated_on>
     </sys_script_include>
     <sys_es_latest_script action="INSERT_OR_UPDATE">
         <id>1ab73fb153f69210829a70c0a0490e08</id>

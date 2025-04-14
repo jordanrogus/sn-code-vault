@@ -43,20 +43,19 @@ CONSTANTS.RECORD_CLONE_MODIFICATION_WARNING = `Improper modification object used
 CONSTANTS.RECORD_CLONE_INVALID_MODIFICATION_FIELDS = `Modification field(s) '{0}' are invalid for table '{1}' and thus ignored in the record clone`;
 CONSTANTS.RECORD_CLONE_ERROR = `Unsuccessfully cloned source record '{0}' from table '{1}'`;
 CONSTANTS.ARRAY_DISPLAY_TRANSLATION_MAX_LENGTH_REACHED = `Array of sys_ids to translate for table '{0}' exceeds the maximum array length allowed of '{1}'`;
-CONSTANTS.ARITHMETIC_ARRAY_MAX_LENGTH_REACHED = `Array to run arithmetic operations on exceeds the maximum array length allowed of '{0}'`;
-]]></script>
+CONSTANTS.ARITHMETIC_ARRAY_MAX_LENGTH_REACHED = `Array to run arithmetic operations on exceeds the maximum array length allowed of '{0}'`;]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-30 22:52:06</sys_created_on>
         <sys_id>7bb8ba6553f21210829a70c0a0490e83</sys_id>
-        <sys_mod_count>44</sys_mod_count>
+        <sys_mod_count>51</sys_mod_count>
         <sys_name>CONSTANTS</sys_name>
         <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
         <sys_policy/>
         <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
         <sys_update_name>sys_script_include_7bb8ba6553f21210829a70c0a0490e83</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2025-02-11 21:58:55</sys_updated_on>
+        <sys_updated_on>2025-04-14 20:03:21</sys_updated_on>
     </sys_script_include>
     <sys_es_latest_script action="INSERT_OR_UPDATE">
         <id>7bb8ba6553f21210829a70c0a0490e83</id>
