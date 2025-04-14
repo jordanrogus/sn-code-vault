@@ -9,12 +9,16 @@ DuplicateFinder - Functions to support checking for duplicate records</br>
 RecordCloner - Functions to support cloning SN records</br>
 TypeChecker - Functions to support JS and SN type checking</br>
 XmlJsonConverter - Functions to support handling XML and JSON conversions</br>
+CONSTANTS - Private application constants
 
-The follow classes (script includes) are on the backlog</br>
+The follow classes (script includes) are on the backlog for development</br>
 ArrayHandler</br>
 ChronoManager</br>
 JsonHandler</br>
 StringHandler</br>
 OrderHierarchy</br>
-GlideService (Courtesy of Mr. Arbour)
-GlideServiceAjax (Courtesy of Mr. Arbour)
+
+The following classes (script includes) are on the backlog for testing</br>
+GlideService (Courtesy of Mr. David Arbour)</br>
+GlideServiceAjax (Courtesy of Mr. David Arbour)</br>
+<i>*Some Functions within DatabaseHelper (Courtesy of Mr. Brett Pedersen)</i></br>
