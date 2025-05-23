@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>public</access>
+        <active>true</active>
+        <api_name>x_648117_codevault.DataValidator</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>Functions to support common data validations.</description>
+        <mobile_callable>false</mobile_callable>
+        <name>DataValidator</name>
+        <sandbox_callable>false</sandbox_callable>
+        <script><![CDATA[const DataValidator = Class.create();
+DataValidator.prototype = {
+    initialize: function() {},
+
+    ////////////////////////////////////////////// IP Address //////////////////////////////////////////////
+
+    /**
+     * Validates whether a given string is a valid IPv4 or IPv6 address, with optional CIDR notation.
+     *
+     * Supports:
+     * - Standard and zero-padded IPv4 (e.g., "10.34.51.20", "010.001.010.210")
+     * - Fully expanded and shorthand IPv6 (e.g., "1507:f0d0:1002:0051:0000:0000:0000:0004", "1507:f0d0:1002:51::4")
+     * - IPv4 and IPv6 in CIDR notation (e.g., "192.168.1.0/24", "2001:db8::/32")
+     *
+     * @param {string} ip - The IP address string to validate.
+     * @returns {boolean} Returns true if the input is a valid IPv4 or IPv6 address (optionally in CIDR notation), false otherwise.
+     * 
+     * @throws {Error} - If the input is not a string
+     *
+     * @example
+     * isValidIP("10.34.51.20"); // true
+     * isValidIP("010.001.010.210"); // true
+     * isValidIP("1507:f0d0:1002:0051:0000:0000:0000:0004"); // true
+     * isValidIP("1507:f0d0:1002:51::4"); // true
+     * isValidIP("192.168.0.0/16"); // true
+     * isValidIP("2001:db8::/32"); // true
+     * isValidIP("999.999.999.999"); // false
+     * isValidIP("10.0.0.0/999"); // false
+     */
+    isValidIP: function(ip) {
+        if (typeof ip !== 'string') {
+            throw new TypeError(CONSTANTS.INVALID_STRING);
+        }
+
+        // Split off the CIDR part if it exists
+        const parts = ip.split('/');
+        const address = parts[0];
+        const cidr = parts[1];
+
+        const isIPv4 = CONSTANTS.IPV4_REGEX.test(address);
+        const isIPv6 = CONSTANTS.IPV6_REGEX.test(address);
+
+        if (!isIPv4 && !isIPv6) {
+            return false;
+        }
+
+        if (cidr !== undefined) {
+            const cidrInt = parseInt(cidr, 10);
+            if (isNaN(cidrInt)) {
+                return false;
+            }
+            if (isIPv4 && (cidrInt < 0 || cidrInt > 32)) {
+                return false;
+            }
+            if (isIPv6 && (cidrInt < 0 || cidrInt > 128)) {
+                return false;
+            }
+        }
+        return true;
+    },
+
+    /**
+     * Returns invalid IP addresses from a list of IP addresses (with optional CIDR).
+     *
+     * Uses `isValidIP` to validate each individual IP or CIDR block.
+     *
+     * @param {string} ipList - A comma-separated string of IP addresses.
+     * @returns {string} Returns all invalid IPs from the list. Empty denotes all are valid.
+     * 
+     * @throws {Error} - If the input is not a string
+     *
+     * @example
+     * invalidIPs("10.34.51.20, 192.168.0.0/16"); // 
+     * invalidIPs("1507:f0d0:1002:51::4, 10.0.0.1"); // 
+     * invalidIPs("10.0.0.1, 999.999.999.999"); // 999.999.999.999
+     * invalidIPs("192.168.1.0/24, 2001:db8::/129"); // 2001:db8::/129
+     * invalidIPs("192.168.1.0/24, 999.999.999.999, 2001:db8::/129"); // 999.999.999.999,2001:db8::/129
+     */
+    invalidIPs: function(ipList) {
+        if (typeof ipList !== 'string') {
+            throw new TypeError(CONSTANTS.INVALID_STRING);
+        }
+
+        const ips = ipList.split(',');
+        let invalidIps = [];
+        for (let i = 0; i < ips.length; i++) {
+            const ip = ips[i].trim();
+            if (!this.isValidIP(ip)) {
+                invalidIps.push(ip);
+            }
+        }
+        return invalidIps.toString();
+    },
+
+    ////////////////////////////////////////////// Subnet //////////////////////////////////////////////
+
+    /**
+     * Validates whether a given string is a proper subnet (IPv4 or IPv6 in CIDR format).
+     *
+     * Ensures:
+     * - Correct IP and prefix format
+     * - IP is the base network address for that subnet
+     *
+     * @param {string} subnet - CIDR-formatted string (e.g., "192.168.1.0/24", "2001:db8::/32").
+     * @returns {boolean} True if the CIDR represents a valid subnet (network address), false otherwise.
+     * 
+     * @throws {Error} - If the input is not a string
+     * 
+     * @example
+     * validateSubnet("192.168.1.0/24");   // true
+     * validateSubnet("192.168.1.123/24"); // false
+     * validateSubnet("2001:db8::/32");    // true
+     */
+    isValidSubnet: function(subnet) {
+        if (typeof subnet !== 'string') {
+            throw new TypeError(CONSTANTS.INVALID_STRING);
+        }
+
+        if (!this.isValidIP(subnet) || subnet.indexOf('/') === -1) {
+            return false;
+        }
+
+        const parts = subnet.split('/');
+        const ip = parts[0];
+        const prefix = parseInt(parts[1], 10);
+
+        const isIPv4 = CONSTANTS.IPV4_REGEX.test(ip);
+        const isIPv6 = CONSTANTS.IPV6_REGEX.test(ip);
+
+        // IPv4 support
+        if (isIPv4 && prefix >= 0 && prefix <= 32) {
+            const ipParts = ip.split('.').map(function(x) {
+                return parseInt(x, 10);
+            });
+
+            // Split the IP into octets and convert each to integer
+            const octets = ip.split('.').map(function(part) {
+                return parseInt(part, 10);
+            });
+
+            // Ensure exactly 4 octets, and all are valid numbers
+            if (octets.length !== 4 || octets.some(isNaN)) {
+                return false;
+            }
+
+            // Convert IP to a 32-bit integer
+            const ipAsInt = (octets[0] << 24) | (octets[1] << 16) | (octets[2] << 8) | octets[3];
+
+            // Build the subnet mask based on the prefix
+            const subnetMask = ~(Math.pow(2, 32 - prefix) - 1) >>> 0;
+
+            // Network address (Subnet) check: IP AND mask should equal IP itself
+            return (ipAsInt & subnetMask) === ipAsInt;
+        }
+
+        // IPv6 support
+        if (isIPv6 && prefix >= 0 && prefix <= 128) {
+            try {
+
+                // Expand abbreviated IPv6 into full 8-group format
+                const expanded = this._expandIPv6(ip);
+
+                // Convert full IPv6 address to a 128-bit binary string
+                const bin = this._ipv6ToBinary(expanded);
+
+                // Create expected network address by zeroing host bits
+                const masked = bin.slice(0, prefix) + '0'.repeat(128 - prefix);
+
+                // Check: The input address is the base network address
+                return bin === masked;
+            } catch (e) {
+
+                // Invalid
+                return false;
+            }
+        }
+        return false;
+    },
+
+    /**
+     * Returns invalid IP subnets from a list of IP subnets.
+     *
+     * This function:
+     * - Splits the input string by commas
+     * - Trims whitespace around each subnet
+     * - Uses `isValidSubnet()` to check each entry
+     *
+     * A valid subnet must be in CIDR format and represent the network base address.
+     *
+     * @param {string} subnetList - A string of comma-separated CIDR subnets (e.g., "10.0.0.0/8, 192.168.1.0/24").
+     * @returns {boolean} Returns all invalid subnets from the list. Null denotes all are valid.
+     * 
+     * @throws {Error} - If the input is not a string
+     *
+     * @example
+     * invalidSubnets("10.0.0.0/8, 192.168.1.0/24");               // null
+     * invalidSubnets("10.0.0.1/8, 192.168.1.0/24");               // 10.0.0.1/8
+     * invalidSubnets("192.168.1.0/24, fd00::1/8, 2001:db8::/32"); // fd00::1/8
+     */
+    invalidSubnets: function(subnetList) {
+        if (typeof subnetList !== 'string') {
+            throw new TypeError(CONSTANTS.INVALID_STRING);
+        }
+
+        const subnets = subnetList.split(',');
+        let invalidSubnets = [];
+        for (let i = 0; i < subnets.length; i++) {
+            const subnet = subnets[i].trim();
+            if (!this.isValidSubnet(subnet)) {
+                invalidSubnets.push(subnet);
+            }
+        }
+        return invalidSubnets.toString();
+    },
+
+    /**
+     * Expands a compressed IPv6 address (with "::") into its full 8-group format. Each group is zero-padded to 4 hexadecimal digits.
+     *
+     * @param {string} ipv6 - A compressed or full IPv6 address (e.g., "2001:db8::1")
+     * @returns {string} - The fully expanded IPv6 address (e.g., "2001:0db8:0000:0000:0000:0000:0000:0001")
+     *
+     * @throws {Error} - If the IPv6 address is malformed (e.g., multiple "::" or too many segments)
+     *
+     * @example
+     * _expandIPv6("2001:db8::1"); // "2001:0db8:0000:0000:0000:0000:0000:0001"
+     *
+     * @example
+     * _expandIPv6("::");          // "0000:0000:0000:0000:0000:0000:0000:0000"
+     */
+    _expandIPv6: function(ipv6) {
+        const full = '';
+        const parts = ipv6.split('::');
+
+        if (parts.length > 2) {
+            throw new Error(CONSTANTS.INVALID_IPV6);
+        }
+
+        // Split head and tail parts of the "::"
+        const head = (parts[0] || '').split(':');
+        const tail = (parts[1] || '').split(':');
+
+        // Calculate how many zero groups to insert
+        const missingGroups = 8 - (head.length + tail.length);
+
+        if (missingGroups < 0) {
+            throw new Error(CONSTANTS.INVALID_IPV6);
+        }
+
+        // Fill in zero groups
+        const zeros = [];
+        for (let i = 0; i < missingGroups; i++) {
+            zeros.push('0');
+        }
+        const fullGroups = head.concat(zeros).concat(tail);
+
+        // Pad each group to 4 characters (e.g., "db8" → "0db8")
+        return fullGroups.map(function(group) {
+            return ('0000' + group).slice(-4);
+        }).join(':');
+    },
+
+    /**
+     * Converts an expanded (8-group) IPv6 address to a 128-bit binary string. Each 4-digit hex group is converted to a 16-bit binary segment.
+     *
+     * @param {string} expandedIPv6 - A fully expanded IPv6 address (e.g., "2001:0db8:0000:0000:0000:0000:0000:0001")
+     * @returns {string} - A 128-character binary string (e.g., "00100000000000010000110110111000...0000000000000001")
+     *
+     * @example
+     * _ipv6ToBinary("2001:0db8:0000:0000:0000:0000:0000:0001"); // "0010000000000001000011011011100000000000000000000000000000000000..."
+     */
+    _ipv6ToBinary: function(expandedIPv6) {
+        return expandedIPv6.split(':').map(function(h) {
+            // Parse each hex group into a 16-bit binary string
+            return parseInt(h, 16).toString(2).padStart(16, '0');
+        }).join('');
+    },
+
+    ////////////////////////////////////////////// MAC Address //////////////////////////////////////////////
+
+    /**
+     * Validates whether a given string is a valid MAC address in standard formats.
+     *
+     * Supported formats:
+     * - Colon-separated (e.g., 00:1A:2B:3C:4D:5E)
+     * - Hyphen-separated (e.g., 00-1A-2B-3C-4D-5E)
+     * - Dot-separated (e.g., 001A.2B3C.4D5E)
+     *
+     * @param {string} mac - The MAC address string to validate.
+     * @returns {boolean} True if the MAC address is valid, false otherwise.
+     * 
+     * @throws {Error} - If the input is not a string
+     *
+     * @example
+     * isValidMACAddress("00:1A:2B:3C:4D:5E"); // true
+     * isValidMACAddress("00-1A-2B-3C-4D-5E"); // true
+     * isValidMACAddress("001A.2B3C.4D5E");    // true
+     * isValidMACAddress("001A:2B3C:4D5E");    // false
+     */
+    isValidMACAddress: function(mac) {
+        if (typeof mac !== 'string') {
+            throw new TypeError(CONSTANTS.INVALID_STRING);
+        }
+
+        const isColonMAC = CONSTANTS.MAC_COLON_REGEX;
+        const isHyphenMAC = CONSTANTS.MAC_HYPHEN_REGEX;
+        const isDotMAC = CONSTANTS.MAC_DOT_REGEX;
+        return isColonMAC.test(mac) || isHyphenMAC.test(mac) || isDotMAC.test(mac);
+    },
+
+    type: 'DataValidator'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-05-23 14:29:50</sys_created_on>
+        <sys_id>7eea2a774761ae50c71d8f59e16d43f6</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>DataValidator</sys_name>
+        <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
+        <sys_update_name>sys_script_include_7eea2a774761ae50c71d8f59e16d43f6</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-05-23 14:30:17</sys_updated_on>
+    </sys_script_include>
+</record_update>
