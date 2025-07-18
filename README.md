@@ -5,6 +5,7 @@ A ServiceNow scoped application to be a central repository for reusable function
 Includes the following classes (script includes)</br>
 ArithmeticOperation - Functions to support common arithmetic operations</br>
 DatabaseHelper - Utility functions to simplify and standardize certain common interactions with the ServiceNow database</br>
+DataValidator - Functions to support common data validations</br>
 DuplicateFinder - Functions to support checking for duplicate records</br>
 RecordCloner - Functions to support cloning SN records</br>
 TypeChecker - Functions to support JS and SN type checking</br>
@@ -20,5 +21,4 @@ OrderHierarchy</br>
 
 The following classes (script includes) are on the backlog for testing</br>
 GlideService (Courtesy of Mr. David Arbour)</br>
-GlideServiceAjax (Courtesy of Mr. David Arbour)</br>
-<i>*Some Functions within DatabaseHelper (Courtesy of Mr. Brett Pedersen)</i></br>
+ObjectManager (Courtesy of Mr. Tim Bremm)</br>
