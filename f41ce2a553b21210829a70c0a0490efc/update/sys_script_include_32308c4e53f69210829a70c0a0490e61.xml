@@ -13,34 +13,106 @@
 TypeChecker.prototype = {
     initialize: function() {},
 
+    /**SNDOC
+    @name isNull
+    @description Checks if a value is null.
+    @param {Any} [arg] - Input to check
+    @returns {boolean} Result of check
+    @example
+    return global.TypeChecker().isNull("foo"); 
+    // false
+    */
     isNull: function(arg) {
         return arg === null;
     },
 
+    /**SNDOC
+    @name isUndefined
+    @description Checks if a value is undefined.
+    @param {Any} [arg] - Input to check
+    @returns {boolean} Result of check
+    @example
+    return global.TypeChecker().isUndefined("foo"); 
+    // false
+    */
     isUndefined: function(arg) {
         return arg === undefined;
     },
 
+    /**SNDOC
+    @name isNil
+    @description Checks if a value is nil. Nil is defined as a value that is null or undefined, and also checks using the gs.nil() function. 
+    @param {Any} [arg] - Input to check
+    @returns {boolean} Result of check
+    @example
+    return global.TypeChecker().isNil("foo"); 
+    // false
+    */
     isNil: function(arg) {
-        return this.isNull(arg) || this.isUndefined(arg);
+        return this.isNull(arg) || this.isUndefined(arg) || gs.nil(arg);
     },
 
+    /**SNDOC
+    @name isString
+    @description Checks if a value is a string. 
+    @param {Any} [arg] - Input to check
+    @returns {boolean} Result of check
+    @example
+    return global.TypeChecker().isString("foo"); 
+    // true
+    */
     isString: function(arg) {
-        return typeof arg === 'string';
+        return typeof arg === "string";
     },
 
+    /**SNDOC
+    @name isEmptyString
+    @description Checks if a value is an empty string. 
+    @param {Any} [arg] - Input to check
+    @returns {boolean} Result of check
+    @example
+    return global.TypeChecker().isEmptyString("foo"); 
+    // false
+    */
     isEmptyString: function(arg) {
         return this.isString(arg) && arg.length === 0;
     },
 
+    /**SNDOC
+    @name isPopulatedString
+    @description Checks if a value is not an empty string. A string with only whitespace is not considered populated.
+    @param {Any} [arg] - Input to check
+    @returns {boolean} Result of check
+    @example
+    return global.TypeChecker().isPopulatedString("foo"); 
+    // true
+    */
     isPopulatedString: function(arg) {
         return this.isString(arg) && arg.trim().length > 0;
     },
 
+    /**SNDOC
+    @name isSysId
+    @description Checks if a value is a sysId. 
+    @param {Any} [arg] - Input to check
+    @returns {boolean} Result of check
+    @example
+    return global.TypeChecker().isSysId("foo"); 
+    // false
+    */
     isSysId: function(arg) {
         return this.isString(arg) && /^[a-z0-9]{32}$/i.test(arg);
     },
 
+    /**SNDOC
+    @name isJsonString
+    @description Checks if a value is a JSON string.
+    @param {Any} [arg] - Input to check
+    @returns {boolean} Result of check
+    @example
+    return global.TypeChecker().isJsonString("{\"a\":1,\"b\":true}"); 
+    // true
+    */
     isJsonString: function(arg) {
         if (!this.isString(arg)) {
             return false;
@@ -54,6 +126,15 @@ TypeChecker.prototype = {
         }
     },
 
+    /**SNDOC
+    @name isXmlString
+    @description Checks if a value is an XML string. 
+    @param {Any} [arg] - Input to check
+    @returns {boolean} Result of check
+    @example
+    return global.TypeChecker().isXmlString("<user><name>Jane</name><age>30</age></user>"); 
+    // true
+    */
     isXmlString: function(arg) {
         if (!this.isString(arg)) {
             return false;
@@ -63,113 +144,274 @@ TypeChecker.prototype = {
         return check === null ? true : false;
     },
 
+    /**SNDOC
+    @name isRegExp
+    @description Checks if a value is a regular expression. 
+    @param {Any} [arg] - Input to check
+    @returns {boolean} Result of check
+    @example
+    return global.TypeChecker().isRegExp(/abc/); 
+    // true
+    */
     isRegExp: function(arg) {
         return arg instanceof RegExp;
     },
 
-    isParsableAsNumber: function(arg) {
-        // Check if it's a number directly
-        if (this.isNumber(arg)) {
-            return true;
+    /**SNDOC
+    @name isIntendedAsNumber
+    @description Checks if a value is supposed to represent a number. 
+    @param {Any} [arg] - Input to check
+    @returns {boolean} Result of check
+    @example
+	// The following use-cases are the scope of what will return true. 
+	// This includes: Integers, Decimal Numbers with or without leading integers, Scientific Notation, Infinity, Hexadecimal, and
+	// all of their stringifed and negative counterparts. 
+	return global.TypeChecker().isIntendedAsNumber(5); // true
+	return global.TypeChecker().isIntendedAsNumber("-5"); // true
+	return global.TypeChecker().isIntendedAsNumber(.5); // true
+	return global.TypeChecker().isIntendedAsNumber("-.5"); // true
+	return global.TypeChecker().isIntendedAsNumber(1.5); // true
+	return global.TypeChecker().isIntendedAsNumber("-1.5"); // true
+	return global.TypeChecker().isIntendedAsNumber(5e2); // true
+	return global.TypeChecker().isIntendedAsNumber("-5e2"); // true
+	return global.TypeChecker().isIntendedAsNumber(Infinity); // true
+	return global.TypeChecker().isIntendedAsNumber("-Infinity"); // true
+	return global.TypeChecker().isIntendedAsNumber(0xF); // true
+	return global.TypeChecker().isIntendedAsNumber("-0xF"); // true
+    */
+    isIntendedAsNumber: function(arg) {
+        if (this.isNull(arg) || this.isisBoolean(arg) || this.isUndefined(arg) || this.isArray(arg)) {
+            return false;
         }
 
-        // If not, check if it's a valid numeric string (including scientific notation)
-        if (this.isString(arg)) {
-            return /^-?\d+(\.\d+)?([eE][+-]?\d+)?$/.test(arg);
+        // Exclude empty strings and strings containing only whitespace
+        if (this.isString(arg) && arg.trim() === "") {
+            return false;
         }
 
-        // Otherwise, it's not parsable as a number
-        return false;
+        return this.isNumber(Number(arg));
     },
 
+    /**SNDOC
+    @name isNumber
+    @description Checks if a value is a number.
+    @param {Any} [arg] - Input to check
+    @returns {boolean} Result of check
+    @example
+    return global.TypeChecker().isNumber(5); 
+    // true
+    */
     isNumber: function(arg) {
-        return typeof arg === 'number';
+        return typeof arg === "number" && !isNaN(arg);
     },
 
+    /**SNDOC
+    @name isFiniteNumber
+    @description Checks if a value is a finite number. For example, infinty is not finite where 5 is. 
+    @param {Any} [arg] - Input to check
+    @returns {boolean} Result of check
+    @example
+    return global.TypeChecker().isFiniteNumber(5); 
+    // true
+    */
     isFiniteNumber: function(arg) {
-        return this.isNumber(arg) && isFinite(arg);
+        return this.isNumber(arg) && Number.isFinite(arg);
     },
 
+    /**SNDOC
+    @name isInteger
+    @description Checks if a value is an integer.
+    @param {Any} [arg] - Input to check
+    @returns {boolean} Result of check
+    @example
+    return global.TypeChecker().isInteger(8); 
+    // true
+    */
     isInteger: function(arg) {
         return Number.isInteger(arg);
     },
 
+    /**SNDOC
+    @name isPositiveInteger
+    @description Checks if a value is a positive integer.
+    @param {Any} [arg] - Input to check
+    @returns {boolean} Result of check
+    @example
+    return global.TypeChecker().isPositiveInteger(8); 
+    // true
+    */
     isPositiveInteger: function(arg) {
-        return this.isInteger(arg) && arg > 0;
+        return this.isInteger(arg) && (arg > 0 || Object.is(arg, +0));
     },
 
+    /**SNDOC
+	@name isNegativeInteger
+	@description Checks if a value is a negative integer.
+	@param {Any} [arg] - Input to check
+	@returns {boolean} Result of check
+	@example
+	return global.TypeChecker().isNegativeInteger(-8); 
+	// true
+	*/
     isNegativeInteger: function(arg) {
-        return this.isInteger(arg) && arg < 0;
+        return this.isInteger(arg) && (arg < 0 || Object.is(arg, -0));
     },
 
+    /**SNDOC
+    @name isBoolean
+    @description Checks if a value is a boolean.
+    @param {Any} [arg] - Input to check
+    @returns {boolean} Result of check
+    @example
+    return global.TypeChecker().isBoolean(false); 
+    // true
+    */
     isBoolean: function(arg) {
-        return typeof arg === 'boolean';
+        return typeof arg === "boolean";
     },
 
-    isBooleanTrue: function(arg) {
-        return this.isBoolean(arg) && arg === true;
-    },
-
-    isBooleanFalse: function(arg) {
-        return this.isBoolean(arg) && arg === false;
-    },
-
+    /**SNDOC
+	@name isArray
+	@description Checks if a value is an array.
+	@param {Any} [arg] - Input to check
+	@returns {boolean} Result of check
+	@example
+	return global.TypeChecker().isArray(["apple"]); 
+	// true
+	*/
     isArray: function(arg) {
         return Array.isArray(arg);
     },
 
+    /**SNDOC
+	@name isEmptyArray
+	@description Checks if a value is an empty array.
+	@param {Any} [arg] - Input to check
+	@returns {boolean} Result of check
+	@example
+	return global.TypeChecker().isEmptyArray([""]); 
+	// true
+	*/
     isEmptyArray: function(arg) {
         return this.isArray(arg) && arg.length === 0;
     },
 
+    /**SNDOC
+	@name isPopulatedArray
+	@description Checks if a value is a populated array.
+	@param {Any} [arg] - Input to check
+	@returns {boolean} Result of check
+	@example
+	return global.TypeChecker().isPopulatedArray(["apple"]); 
+	// true
+	*/
     isPopulatedArray: function(arg) {
         return this.isArray(arg) && arg.length > 0;
     },
 
+    /**SNDOC
+	@name isObject
+	@description Checks if a value is an object.
+	@param {Any} [arg] - Input to check
+	@returns {boolean} Result of check
+	@example
+	return global.TypeChecker().isObject({name: "Alice", age: 28, isActive: true}); 
+	// true
+	*/
     isObject: function(arg) {
         return (
-            typeof arg === 'object' && !this.isArray(arg) && !this.isNull(arg)
+            typeof arg === "object" && !this.isArray(arg) && !this.isNull(arg)
         );
     },
 
+    /**SNDOC
+    @name isEmptyObject
+    @description Checks if a value is an empty object.
+    @param {Any} [arg] - Input to check
+    @returns {boolean} Result of check
+    @example
+    return global.TypeChecker().isEmptyObject([{}]); 
+    // true
+    */
     isEmptyObject: function(arg) {
         return this.isObject(arg) && Object.keys(arg).length === 0;
     },
 
+    /**SNDOC
+    @name isPopulatedObject
+    @description Checks if a value is a populated object.
+    @param {Any} [arg] - Input to check
+    @returns {boolean} Result of check
+    @example
+    return global.TypeChecker().isPopulatedObject({name: "Alice", age: 28, isActive: true}); 
+    // true
+    */
     isPopulatedObject: function(arg) {
         return this.isObject(arg) && Object.keys(arg).length > 0;
     },
 
-    isObjectArray: function(arg) {
-        return (
-            this.isArray(arg) &&
-            arg.every(
-                function(element) {
-                    return this.isObject(element);
-                }.bind(this)
-            )
-        );
+    /**SNDOC
+	@name isArrayOfObjects
+	@description Checks if a value is an array of objects.
+	@param {Any} [arg] - Input to check
+	@returns {boolean} Result of check
+	@example
+	return global.TypeChecker().isArrayOfObjects([{name: "Alice", age: 28, isActive: true}]); 
+	// true
+	*/
+    isArrayOfObjects: function(arg) {
+		return this.isPopulatedArray(arg) && arg.every(this.isObject());
     },
 
-    isStringArray: function(arg) {
-        return (
-            this.isArray(arg) &&
-            arg.every(
-                function(element) {
-                    return this.isString(element);
-                }.bind(this)
-            )
-        );
+    /**SNDOC
+	@name isArrayOfStrings
+	@description Checks if a value is an array of strings.
+	@param {Any} [arg] - Input to check
+	@returns {boolean} Result of check
+	@example
+	return global.TypeChecker().isArrayOfStrings(["foo"]); 
+	// true
+	*/
+    isArrayOfStrings: function(arg) {
+		return this.isPopulatedString(arg) && arg.every(this.isString());
+
     },
 
+    /**SNDOC
+	@name isFunction
+	@description Checks if a value is a function.
+	@param {Any} [arg] - Input to check
+	@returns {boolean} Result of check
+	@example
+	return global.TypeChecker().isFunction(function() {}); 
+	// true
+	*/
     isFunction: function(arg) {
-        return typeof arg === 'function';
+        return typeof arg === "function";
     },
 
+    /**SNDOC
+	@name isGlideRecord
+	@description Checks if a value is a GlideRecord object.
+	@param {Any} [arg] - Input to check
+	@returns {boolean} Result of check
+	@example
+	return global.TypeChecker().isGlideRecord(new GlideRecord("incident"))); 
+	// true
+	*/
     isGlideRecord: function(arg) {
         return arg instanceof GlideRecord;
     },
 
+    /**SNDOC
+	@name isGlideAggregate
+	@description Checks if a value is a GlideAggregate object.
+	@param {Any} [arg] - Input to check
+	@returns {boolean} Result of check
+	@example
+	return global.TypeChecker().isGlideAggregate(new GlideAggregate("incident"))); 
+	// true
+	*/
     isGlideAggregate: function(arg) {
         return arg instanceof GlideAggregate;
     },
@@ -180,14 +422,14 @@ TypeChecker.prototype = {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-31 22:47:39</sys_created_on>
         <sys_id>32308c4e53f69210829a70c0a0490e61</sys_id>
-        <sys_mod_count>30</sys_mod_count>
+        <sys_mod_count>31</sys_mod_count>
         <sys_name>TypeChecker</sys_name>
         <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
         <sys_policy/>
         <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
         <sys_update_name>sys_script_include_32308c4e53f69210829a70c0a0490e61</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2025-04-14 20:03:21</sys_updated_on>
+        <sys_updated_on>2025-07-18 20:21:37</sys_updated_on>
     </sys_script_include>
     <sys_es_latest_script action="INSERT_OR_UPDATE">
         <id>32308c4e53f69210829a70c0a0490e61</id>

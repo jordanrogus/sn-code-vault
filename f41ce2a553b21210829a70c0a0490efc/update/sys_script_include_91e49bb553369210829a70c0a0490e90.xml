@@ -12,7 +12,7 @@
         <script><![CDATA[const ArithmeticOperation = Class.create();
 ArithmeticOperation.prototype = {
     initialize: function() {
-        this.tc = new x_648117_codevault.TypeChecker();
+        this.TYPE_CHECKER = new x_648117_codevault.TypeChecker();
     },
 
     /**
@@ -25,7 +25,7 @@ ArithmeticOperation.prototype = {
     sumElements: function(array) {
         const filteredArray = this._sanitizeForArithmetic(array);
         if (!filteredArray) {
-            throw new TypeError(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
+            throw new TypeError(gs.getMessage(CONSTANTS.INVALID_PARAMS, ["array", array]));
         }
         return filteredArray
             .reduce(function(total, num) {
@@ -44,7 +44,7 @@ ArithmeticOperation.prototype = {
     subtractElements: function(array) {
         const filteredArray = this._sanitizeForArithmetic(array);
         if (!filteredArray) {
-            throw new TypeError(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
+            throw new TypeError(gs.getMessage(CONSTANTS.INVALID_PARAMS, ["array", array]));
         }
         if (filteredArray.length === 1) {
             return parseFloat(filteredArray[0]).toFixed(2);
@@ -66,7 +66,7 @@ ArithmeticOperation.prototype = {
     divideElements: function(array) {
         const filteredArray = this._sanitizeForArithmetic(array);
         if (!filteredArray) {
-            throw new TypeError(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
+            throw new TypeError(gs.getMessage(CONSTANTS.INVALID_PARAMS, ["array", array]));
         }
         if (filteredArray.length === 1) {
             if (parseFloat(filteredArray[0]) === 0) {
@@ -92,7 +92,7 @@ ArithmeticOperation.prototype = {
             return parsedTotal / parsedNum;
         });
 
-        if (this.tc.isNull(result)) {
+        if (this.TYPE_CHECKER.isNull(result)) {
             return result;
         }
         return result.toFixed(2);
@@ -108,7 +108,7 @@ ArithmeticOperation.prototype = {
     multiplyElements: function(array) {
         const filteredArray = this._sanitizeForArithmetic(array);
         if (!filteredArray) {
-            throw new TypeError(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
+            throw new TypeError(gs.getMessage(CONSTANTS.INVALID_PARAMS, ["array", array]));
         }
         if (filteredArray.length === 1) {
             return parseFloat(filteredArray[0]).toFixed(2);
@@ -130,7 +130,7 @@ ArithmeticOperation.prototype = {
      * @returns {Array.<string>|null} - Filtered array
      **/
     _sanitizeForArithmetic: function(array) {
-        if (!this.tc.isPopulatedArray(array)) {
+        if (!this.TYPE_CHECKER.isPopulatedArray(array)) {
             return null;
         }
         if (array.length > CONSTANTS.ARITHMETIC_ARRAY_MAX_LENGTH) {
@@ -139,8 +139,8 @@ ArithmeticOperation.prototype = {
         return array.filter(
             function(element) {
                 return (
-                    this.tc.isParsableAsNumber(element) &&
-                    this.tc.isFiniteNumber(parseFloat(element))
+                    this.TYPE_CHECKER.isParsableAsNumber(element) &&
+                    this.TYPE_CHECKER.isFiniteNumber(parseFloat(element))
                 );
             }.bind(this)
         );
@@ -152,14 +152,14 @@ ArithmeticOperation.prototype = {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-31 19:31:16</sys_created_on>
         <sys_id>91e49bb553369210829a70c0a0490e90</sys_id>
-        <sys_mod_count>45</sys_mod_count>
+        <sys_mod_count>46</sys_mod_count>
         <sys_name>ArithmeticOperation</sys_name>
         <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
         <sys_policy/>
         <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
         <sys_update_name>sys_script_include_91e49bb553369210829a70c0a0490e90</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2025-04-14 20:03:21</sys_updated_on>
+        <sys_updated_on>2025-07-18 22:54:20</sys_updated_on>
     </sys_script_include>
     <sys_es_latest_script action="INSERT_OR_UPDATE">
         <id>91e49bb553369210829a70c0a0490e90</id>

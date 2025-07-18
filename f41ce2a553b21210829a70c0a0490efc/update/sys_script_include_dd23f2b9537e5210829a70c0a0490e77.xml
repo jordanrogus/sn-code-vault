@@ -12,7 +12,7 @@
         <script><![CDATA[const RecordCloner = Class.create();
 RecordCloner.prototype = {
     initialize: function() {
-        this.tc = new x_648117_codevault.TypeChecker();
+        this.TYPE_CHECKER = new x_648117_codevault.TypeChecker();
     },
 
     /**
@@ -23,8 +23,11 @@ RecordCloner.prototype = {
      * @returns {string} - Sys_id of the new record
      **/
     cloneRecord: function(tableName, sourceSysId, modifications) {
-        if (!gs.tableExists(tableName) || !this.tc.isSysId(sourceSysId)) {
-            throw new TypeError(gs.getMessage(CONSTANTS.INVALID_PARAMS, JSON.stringify(arguments)));
+        if (!gs.tableExists(tableName)) {
+            throw new TypeError(gs.getMessage(CONSTANTS.INVALID_PARAMS, ["tableName", tableName]));
+        }
+		if (!this.TYPE_CHECKER.isSysId(sourceSysId)) {
+            throw new TypeError(gs.getMessage(CONSTANTS.INVALID_PARAMS, ["sourceSysId", sourceSysId]));
         }
 
         const sourceGr = new GlideRecord(tableName);
@@ -44,7 +47,7 @@ RecordCloner.prototype = {
         });
 
         if (modifications) {
-            if (this.tc.isPopulatedObject(modifications)) {
+            if (this.TYPE_CHECKER.isPopulatedObject(modifications)) {
                 const invalidFields = [];
                 Object.entries(modifications).forEach(([key, value]) => {
                     if (clonedGr.isValidField(key)) {
@@ -96,14 +99,14 @@ RecordCloner.prototype = {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-31 17:05:22</sys_created_on>
         <sys_id>dd23f2b9537e5210829a70c0a0490e77</sys_id>
-        <sys_mod_count>42</sys_mod_count>
+        <sys_mod_count>43</sys_mod_count>
         <sys_name>RecordCloner</sys_name>
         <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
         <sys_policy/>
         <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
         <sys_update_name>sys_script_include_dd23f2b9537e5210829a70c0a0490e77</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2025-04-14 20:03:21</sys_updated_on>
+        <sys_updated_on>2025-07-18 23:18:30</sys_updated_on>
     </sys_script_include>
     <sys_es_latest_script action="INSERT_OR_UPDATE">
         <id>dd23f2b9537e5210829a70c0a0490e77</id>

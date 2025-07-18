@@ -5,9 +5,9 @@
         <api_name>x_648117_codevault.ArrayHandler</api_name>
         <caller_access/>
         <client_callable>false</client_callable>
-        <description>Functions to support common array manipulations.&#13;
-&#13;
-Development TBD</description>
+        <description>Functions to support common array manipulations.
+
+Development TBD.</description>
         <mobile_callable>false</mobile_callable>
         <name>ArrayHandler</name>
         <sandbox_callable>false</sandbox_callable>
@@ -39,14 +39,14 @@ ArrayHandler.prototype = {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2025-01-07 19:49:39</sys_created_on>
         <sys_id>ee4c534453471210829a70c0a0490e8b</sys_id>
-        <sys_mod_count>11</sys_mod_count>
+        <sys_mod_count>12</sys_mod_count>
         <sys_name>ArrayHandler</sys_name>
         <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
         <sys_policy/>
         <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
         <sys_update_name>sys_script_include_ee4c534453471210829a70c0a0490e8b</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2025-04-14 20:19:07</sys_updated_on>
+        <sys_updated_on>2025-07-18 23:34:15</sys_updated_on>
     </sys_script_include>
     <sys_es_latest_script action="INSERT_OR_UPDATE">
         <id>ee4c534453471210829a70c0a0490e8b</id>

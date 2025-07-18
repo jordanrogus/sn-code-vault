@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="DELETE">
+        <access>public</access>
+        <active>true</active>
+        <api_name>x_648117_codevault.GlideServiceAjax</api_name>
+        <caller_access/>
+        <client_callable>true</client_callable>
+        <description>A service to simply interacting with the SN database from client-side. &#13;
+&#13;
+Courtsey of David Arbour.&#13;
+&#13;
+Testing TBD</description>
+        <mobile_callable>false</mobile_callable>
+        <name>GlideServiceAjax</name>
+        <sandbox_callable>false</sandbox_callable>
+        <script><![CDATA[var GlideServiceAjax = Class.create();
+GlideServiceAjax.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
+
+    /**
+     * Inserts a new record into the specified table.
+     * @param {string} sysparm_table_name - The table for the new record.
+     * @param {Object} sysparm_record_object - The data for the new record.
+     * @returns {string} The sys_id of the newly inserted record or false on failure.
+     */
+    insert: function() {
+        const tableName = this.getParameter('sysparm_table_name');
+        const recordObject = this.getParameter('sysparm_record_object');
+
+        return new GlideService(tableName).insert(JSON.parse(recordObject));
+    },
+
+    /**
+     * Retrieves multiple records based on an encoded query.
+     * @param {string} sysparm_table_name - The table for the new record.
+     * @param {string} sysparm_encoded_query - The query string.
+     * @param {string[]} sysparm_field_names - The fields to retrieve.
+     * @param {number} sysparm_row_count - The maximum number of records to return.
+     * @returns {string} A JSON string representing the retrieved records.
+     */
+    multiple: function() {
+        const tableName = this.getParameter('sysparm_table_name');
+        const encodedQuery = this.getParameter('sysparm_encoded_query');
+        const fieldNames = this.getParameter('sysparm_field_names');
+        const rowCount = this.getParameter('sysparm_row_count');
+
+        const records = new GlideService(tableName).multiple(encodedQuery, fieldNames, rowCount);
+        return JSON.stringify(records);
+    },
+
+    /**
+     * Retrieves a single record based on an encoded query.
+     * @param {string} sysparm_table_name - The table for the new record.
+     * @param {string} sysparm_encoded_query - The query string.
+     * @param {Array.<string>} sysparm_field_names - The fields to retrieve.
+     * @returns {string} A JSON string representing the retrieved record.
+     */
+    single: function() {
+        const tableName = this.getParameter('sysparm_table_name');
+        const encodedQuery = this.getParameter('sysparm_encoded_query');
+        const fieldNames = this.getParameter('sysparm_field_names');
+
+        const records = new GlideService(tableName).single(encodedQuery, fieldNames);
+        return JSON.stringify(records);
+    },
+
+    /**
+     * Retrieves a single record by sys_id.
+     * @param {string} sysparm_table_name - The table for the new record.
+     * @param {string} sysparm_sys_id - The sys_id of the record.
+     * @param {Array.<string>} sysparm_field_names - The fields to retrieve.
+     * @returns {string} A JSON string representing the retrieved record.
+     */
+    singleId: function() {
+        const tableName = this.getParameter('sysparm_table_name');
+        const sysId = this.getParameter('sysparm_sys_id');
+        const fieldNames = this.getParameter('sysparm_field_names');
+
+        const recordObject = new GlideService(tableName).singleId(sysId, fieldNames);
+        return JSON.stringify(recordObject);
+    },
+
+    /**
+     * Updates a record with the specified sys_id.
+     * @param {string} sysparm_table_name - The table for the new record.
+     * @param {string} sysparm_sys_id - The sys_id of the record.
+     * @param {Object} sysparm_record_object - The data for the new record.
+     * @returns {string} The sys_id of the updated record.
+     */
+    update: function() {
+        const tableName = this.getParameter('sysparm_table_name');
+        const sysId = this.getParameter('sysparm_sys_id');
+        const recordObject = this.getParameter('sysparm_record_object');
+
+        return new GlideService(tableName).update(sysId, JSON.parse(recordObject));
+    },
+
+    type: 'GlideServiceAjax'
+});]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-02-11 19:43:51</sys_created_on>
+        <sys_id>ee9aef9b53af5e10829a70c0a0490e91</sys_id>
+        <sys_mod_count>13</sys_mod_count>
+        <sys_name>GlideServiceAjax</sys_name>
+        <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
+        <sys_update_name>sys_script_include_ee9aef9b53af5e10829a70c0a0490e91</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-04-14 20:19:42</sys_updated_on>
+    </sys_script_include>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</application>
+        <file_path/>
+        <instance_id>326bae532baf5254323ef9f66e91bf7f</instance_id>
+        <instance_name>dev295261</instance_name>
+        <name>sys_script_include_ee9aef9b53af5e10829a70c0a0490e91</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sys_script_include"&gt;&lt;sys_script_include action="INSERT_OR_UPDATE"&gt;&lt;access&gt;public&lt;/access&gt;&lt;active&gt;true&lt;/active&gt;&lt;api_name&gt;x_648117_codevault.GlideServiceAjax&lt;/api_name&gt;&lt;caller_access/&gt;&lt;client_callable&gt;true&lt;/client_callable&gt;&lt;description&gt;A service to simply interacting with the SN database from client-side. &amp;#13;
+&amp;#13;
+Courtsey of David Arbour.&amp;#13;
+&amp;#13;
+Testing TBD&lt;/description&gt;&lt;mobile_callable&gt;false&lt;/mobile_callable&gt;&lt;name&gt;GlideServiceAjax&lt;/name&gt;&lt;sandbox_callable&gt;false&lt;/sandbox_callable&gt;&lt;script&gt;&lt;![CDATA[var GlideServiceAjax = Class.create();
+GlideServiceAjax.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
+
+    /**
+     * Inserts a new record into the specified table.
+     * @param {string} sysparm_table_name - The table for the new record.
+     * @param {Object} sysparm_record_object - The data for the new record.
+     * @returns {string} The sys_id of the newly inserted record or false on failure.
+     */
+    insert: function() {
+        const tableName = this.getParameter('sysparm_table_name');
+        const recordObject = this.getParameter('sysparm_record_object');
+
+        return new GlideService(tableName).insert(JSON.parse(recordObject));
+    },
+
+    /**
+     * Retrieves multiple records based on an encoded query.
+     * @param {string} sysparm_table_name - The table for the new record.
+     * @param {string} sysparm_encoded_query - The query string.
+     * @param {string[]} sysparm_field_names - The fields to retrieve.
+     * @param {number} sysparm_row_count - The maximum number of records to return.
+     * @returns {string} A JSON string representing the retrieved records.
+     */
+    multiple: function() {
+        const tableName = this.getParameter('sysparm_table_name');
+        const encodedQuery = this.getParameter('sysparm_encoded_query');
+        const fieldNames = this.getParameter('sysparm_field_names');
+        const rowCount = this.getParameter('sysparm_row_count');
+
+        const records = new GlideService(tableName).multiple(encodedQuery, fieldNames, rowCount);
+        return JSON.stringify(records);
+    },
+
+    /**
+     * Retrieves a single record based on an encoded query.
+     * @param {string} sysparm_table_name - The table for the new record.
+     * @param {string} sysparm_encoded_query - The query string.
+     * @param {Array.&lt;string&gt;} sysparm_field_names - The fields to retrieve.
+     * @returns {string} A JSON string representing the retrieved record.
+     */
+    single: function() {
+        const tableName = this.getParameter('sysparm_table_name');
+        const encodedQuery = this.getParameter('sysparm_encoded_query');
+        const fieldNames = this.getParameter('sysparm_field_names');
+
+        const records = new GlideService(tableName).single(encodedQuery, fieldNames);
+        return JSON.stringify(records);
+    },
+
+    /**
+     * Retrieves a single record by sys_id.
+     * @param {string} sysparm_table_name - The table for the new record.
+     * @param {string} sysparm_sys_id - The sys_id of the record.
+     * @param {Array.&lt;string&gt;} sysparm_field_names - The fields to retrieve.
+     * @returns {string} A JSON string representing the retrieved record.
+     */
+    singleId: function() {
+        const tableName = this.getParameter('sysparm_table_name');
+        const sysId = this.getParameter('sysparm_sys_id');
+        const fieldNames = this.getParameter('sysparm_field_names');
+
+        const recordObject = new GlideService(tableName).singleId(sysId, fieldNames);
+        return JSON.stringify(recordObject);
+    },
+
+    /**
+     * Updates a record with the specified sys_id.
+     * @param {string} sysparm_table_name - The table for the new record.
+     * @param {string} sysparm_sys_id - The sys_id of the record.
+     * @param {Object} sysparm_record_object - The data for the new record.
+     * @returns {string} The sys_id of the updated record.
+     */
+    update: function() {
+        const tableName = this.getParameter('sysparm_table_name');
+        const sysId = this.getParameter('sysparm_sys_id');
+        const recordObject = this.getParameter('sysparm_record_object');
+
+        return new GlideService(tableName).update(sysId, JSON.parse(recordObject));
+    },
+
+    type: 'GlideServiceAjax'
+});]]&gt;&lt;/script&gt;&lt;sys_class_name&gt;sys_script_include&lt;/sys_class_name&gt;&lt;sys_created_by&gt;admin&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2025-02-11 19:43:51&lt;/sys_created_on&gt;&lt;sys_id&gt;ee9aef9b53af5e10829a70c0a0490e91&lt;/sys_id&gt;&lt;sys_mod_count&gt;13&lt;/sys_mod_count&gt;&lt;sys_name&gt;GlideServiceAjax&lt;/sys_name&gt;&lt;sys_package display_value="CodeVault" source="x_648117_codevault"&gt;f41ce2a553b21210829a70c0a0490efc&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_scope display_value="CodeVault"&gt;f41ce2a553b21210829a70c0a0490efc&lt;/sys_scope&gt;&lt;sys_update_name&gt;sys_script_include_ee9aef9b53af5e10829a70c0a0490e91&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;admin&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2025-04-14 20:19:42&lt;/sys_updated_on&gt;&lt;/sys_script_include&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>-1059905756</payload_hash>
+        <record_name>GlideServiceAjax</record_name>
+        <reverted_from/>
+        <source>9d374063476b1210c71d8f59e16d4390</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-04-14 20:19:42</sys_created_on>
+        <sys_id>5c65039747f02210c71d8f59e16d439b</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>19635f52c340000001</sys_recorded_at>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-04-14 20:19:42</sys_updated_on>
+        <type>Script Include</type>
+        <update_guid>d065039764f02210c8e17f622f9b199b</update_guid>
+        <update_guid_history>d065039764f02210c8e17f622f9b199b:-1059905756,81a14713d1f022103175e63711d0ebc6:2017770282,21c18b1367f02210bca913a232b4db7b:0,5ab10b133df0221047bad4c9437d4b8c:0,81a14713d1f022103175e63711d0ebc6:2017770282,83910713e0f0221073a78bca84fd85d9:133083901,1db0cb9fa9b02210767f82156323b73d:2017770282,5cd0cf9f4eb02210b254a4f79d12e655:0,1db0cb9fa9b02210767f82156323b73d:2017770282,c0b08b9f7ab02210ba67dec57985b9be:133083901,dc8fbe1f8cb02210de10942efb0afc15:0,515ff61f07b02210fbe8a5d11912dce4:0,19e13e1be2702210fc5ec5a399ca2636:2017770282,c6315c23adab12102c24fd6c95c948b4:288148818,19898ca7216b1210a88658450420dc02:1320354988,a28808679b6b1210bb37351ec9070ec3:-839383568,3bf4082b48639e107429b730ac8b212b:1229221858,e042b79f7fef5e10c4b062924d66c790:1441330232,1a123f9770ef5e10a11d4acd102cac9a:-1416626456,b4aa671793ef5e1070bb3fa1ae48c183:1797932541,fe9a2717e5ef5e109561985b617ae46f:2050327826</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-07-18 23:15:19</sys_created_on>
+        <sys_db_object display_value="" name="sys_script_include">sys_script_include</sys_db_object>
+        <sys_id>2dbaf584f4ee402c8fa9dedb47cb3590</sys_id>
+        <sys_metadata>ee9aef9b53af5e10829a70c0a0490e91</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>GlideServiceAjax</sys_name>
+        <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
+        <sys_scope_delete display_value="">42ada460bdd14588ae2bc0c42ab0d2a4</sys_scope_delete>
+        <sys_update_name>sys_script_include_ee9aef9b53af5e10829a70c0a0490e91</sys_update_name>
+        <sys_update_version display_value="sys_script_include_ee9aef9b53af5e10829a70c0a0490e91">5c65039747f02210c71d8f59e16d439b</sys_update_version>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-07-18 23:15:19</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_security_acl_role">
+    <sys_security_acl_role action="DELETE">
+        <sys_class_name>sys_security_acl_role</sys_class_name>
+        <sys_created_by>@@snc_write_audit@@</sys_created_by>
+        <sys_created_on>2025-05-12 17:10:45</sys_created_on>
+        <sys_id>bc91c2a5f334621048dff31191445197</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name/>
+        <sys_package display_value="Global" source="global">global</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
+        <sys_security_acl display_value="">bc91c2a5f334621048dff31778596134</sys_security_acl>
+        <sys_update_name>sys_security_acl_role_bc91c2a5f334621048dff31191445197</sys_update_name>
+        <sys_updated_by>@@snc_write_audit@@</sys_updated_by>
+        <sys_updated_on>2025-05-12 17:10:45</sys_updated_on>
+        <sys_user_role display_value="public" name="public">b0593b350a0a0aa7001d689e4542dc28</sys_user_role>
+    </sys_security_acl_role>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</application>
+        <file_path/>
+        <instance_id>326bae532baf5254323ef9f66e91bf7f</instance_id>
+        <instance_name>dev295261</instance_name>
+        <name>sys_security_acl_role_bc91c2a5f334621048dff31191445197</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_security_acl_role"><sys_security_acl_role action="INSERT_OR_UPDATE"><sys_class_name>sys_security_acl_role</sys_class_name><sys_created_by>@@snc_write_audit@@</sys_created_by><sys_created_on>2025-05-12 17:10:45</sys_created_on><sys_id>bc91c2a5f334621048dff31191445197</sys_id><sys_mod_count>0</sys_mod_count><sys_name/><sys_package display_value="Global" source="global">global</sys_package><sys_policy/><sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope><sys_security_acl display_value="">bc91c2a5f334621048dff31778596134</sys_security_acl><sys_update_name>sys_security_acl_role_bc91c2a5f334621048dff31191445197</sys_update_name><sys_updated_by>@@snc_write_audit@@</sys_updated_by><sys_updated_on>2025-05-12 17:10:45</sys_updated_on><sys_user_role display_value="public" name="public">b0593b350a0a0aa7001d689e4542dc28</sys_user_role></sys_security_acl_role></record_update>]]></payload>
+        <payload_hash>1262888942</payload_hash>
+        <record_name/>
+        <reverted_from/>
+        <source/>
+        <source_table>sys_upgrade_history</source_table>
+        <state>previous</state>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-07-18 22:46:43</sys_created_on>
+        <sys_id>dc16f08247f22210c71d8f59e16d43ad</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>1981fb7ea6f0000001</sys_recorded_at>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-07-18 22:46:43</sys_updated_on>
+        <type>Access Roles</type>
+        <update_guid>9c16f0821af2221099c5f75fb37897ad</update_guid>
+        <update_guid_history>9c16f0821af2221099c5f75fb37897ad:1262888942</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">1816f08247f22210c71d8f59e16d43ac</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>@@snc_write_audit@@</sys_created_by>
+        <sys_created_on>2025-07-18 22:46:43</sys_created_on>
+        <sys_db_object display_value="" name="sys_security_acl_role">sys_security_acl_role</sys_db_object>
+        <sys_id>1c6f96f24a72494fb0c5a226d9afe901</sys_id>
+        <sys_metadata>bc91c2a5f334621048dff31191445197</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name/>
+        <sys_package display_value="Global" source="global">global</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
+        <sys_scope_delete display_value="">42ada460bdd14588ae2bc0c42ab0d2a4</sys_scope_delete>
+        <sys_update_name>sys_security_acl_role_bc91c2a5f334621048dff31191445197</sys_update_name>
+        <sys_update_version display_value="sys_security_acl_role_bc91c2a5f334621048dff31191445197">dc16f08247f22210c71d8f59e16d43ad</sys_update_version>
+        <sys_updated_by>@@snc_write_audit@@</sys_updated_by>
+        <sys_updated_on>2025-07-18 22:46:43</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

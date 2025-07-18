@@ -5,267 +5,883 @@
         <api_name>x_648117_codevault.GlideService</api_name>
         <caller_access/>
         <client_callable>false</client_callable>
-        <description>A service to simply interacting with GlideRecord.&#13;
-&#13;
-Courtsey of David Arbour.&#13;
-&#13;
-Testing TBD</description>
+        <description>A service to simply interacting with GlideRecord.
+
+Courtsey of David Arbour.
+
+Testing TBD.</description>
         <mobile_callable>false</mobile_callable>
         <name>GlideService</name>
         <sandbox_callable>false</sandbox_callable>
-        <script><![CDATA[var GlideService = function(tableName) {
-    return {
-        glidify: glidify,
-        insert: insert,
-        multiple: multiple,
-        objectify: objectify,
-        remove: remove,
-        single: single,
-        singleId: singleId,
-        update: update,
-        type: 'GlideService'
-    };
+        <script><![CDATA[/**
+ * @description This Script Include defines the 'GlideService', a utility for simplified interactions with
+ * ServiceNow's GlideRecord and GlideAggregate APIs. It provides a robust set of helper functions for common
+ * database operations like querying, inserting, updating, and deleting records, as well as efficiently
+ * retrieving field values and display values. This service aims to abstract away some of the complexities of
+ * direct GlideRecord scripting, providing a more object-oriented and maintainable approach to data access
+ * within ServiceNow.
+ */
 
-    /**
-     * Converts a record object into a GlideRecord instance.
-     * @param {Object} recordObject - The record object containing a sys_id.
-     * @returns {GlideRecord|undefined} The GlideRecord instance if found.
-     **/
-    function glidify(recordObject) {
-        if (recordObject && recordObject.sys_id.value) {
-            const glideRecord = _create();
-            if (glideRecord.get(recordObject.sys_id.value)) {
-                return glideRecord;
-            }
-        }
+/**
+ * @class GlideService
+ * @param {string} tableName - The name of the table to perform operations on.
+ * @returns {object} An object containing methods for interacting with the specified table.
+ * @description Constructor for the 'GlideService'. Initializes a new instance of the service,
+ * binding it to a specific ServiceNow table. This allows you to perform various CRUD (Create, Read, Update,
+ * Delete) and query operations on that table using a consistent and simplified interface. Throws an error if
+ * the table name is invalid or not provided.
+ */
+var GlideService = function (tableName) {
+  // Critical error if table name is not provided or invalid at initialization
+  if (!tableName || typeof tableName !== 'string') {
+    throw new Error(`GlideService: Invalid or empty table name provided during initialization.`);
+  }
+
+  return {
+    convertGlideRecordToArray: convertGlideRecordToArray,
+    convertGlideRecordToObject: convertGlideRecordToObject,
+    convertObjectToGlideRecord: convertObjectToGlideRecord,
+    deleteRecord: deleteRecord,
+    deleteRecords: deleteRecords,
+    getDisplayValue: getDisplayValue,
+    getDisplayValues: getDisplayValues,
+    getRecord: getRecord,
+    getRecordCount: getRecordCount,
+    getRecords: getRecords,
+    getUniqueDisplayValues: getUniqueDisplayValues,
+    getUniqueValues: getUniqueValues,
+    getValue: getValue,
+    getValues: getValues,
+    insertRecord: insertRecord,
+    recordExists: recordExists,
+    updateRecord: updateRecord,
+    updateRecords: updateRecords,
+    type: 'GlideService'
+  };
+
+  /**
+   * @memberof GlideService
+   * @function convertGlideRecordToArray
+   * @description Converts a GlideRecord result set (after a query) into an array of structured JavaScript objects.
+   * This function iterates through all records available in the GlideRecord object.
+   * @param {GlideRecord} glideRecord - The GlideRecord object that has already been queried and has records
+   * available via 'hasNext()' or '_next()'.
+   * @param {string|Array<string>} [fieldNames] - Optional. The specific field names to include in each object.
+   * If not provided, all fields will be included.
+   * @returns {Array<object>} An array of JavaScript objects, each representing a record. Throws an error if
+   * 'glideRecord' is not a valid GlideRecord instance.
+   */
+  function convertGlideRecordToArray(glideRecord, fieldNames) {
+    if (!(glideRecord instanceof GlideRecord)) {
+      throw new Error(`convertGlideRecordToArray: Invalid GlideRecord object provided. Expected an instance of GlideRecord.`);
     }
 
-    /**
-     * Inserts a new record into the table.
-     * @param {Object} recordObject - The data for the new record.
-     * @returns {string|boolean} The sys_id of the new record or false on failure.
-     **/
-    function insert(recordObject) {
-        const glideRecordInit = _create(true);
-        if (glideRecordInit) {
-            const glideRecord = _populate(glideRecordInit, recordObject);
-            if (glideRecord) {
-                return glideRecord.insert();
-            }
-        }
-        return false;
+    var objectRecords = [];
+
+    while (glideRecord._next()) {
+      objectRecords.push(convertGlideRecordToObject(glideRecord, fieldNames));
     }
 
-    /**
-     * Retrieves multiple records based on an encoded query.
-     * @param {string} encodedQuery - The query string.
-     * @param {Array.<string>} fieldNames - The fields to retrieve.
-     * @param {number} rowCount - The maximum number of records to return.
-     * @returns {Array.<Object>} An array of record objects.
-     **/
-    function multiple(encodedQuery, fieldNames, rowCount) {
-        encodedQuery = encodedQuery ? encodedQuery.toString() : '';
-        rowCount = parseInt(rowCount);
-        const glideRecord = _create();
-        if (encodedQuery) {
-            glideRecord.addQuery(encodedQuery);
-        }
-        if (!isNaN(rowCount) && rowCount > 0) {
-            glideRecord.setLimit(rowCount);
-        }
-        glideRecord._query();
-        if (glideRecord.hasNext()) {
-            return _toArray(glideRecord, fieldNames);
-        }
-        return [];
+    return objectRecords;
+  }
+
+  /**
+   * @memberof GlideService
+   * @function convertGlideRecordToObject
+   * @description Converts a single GlideRecord object into a structured JavaScript object. Each field in the
+   * resulting object will contain 'name', 'label', 'value', and 'displayValue' properties.
+   * @param {GlideRecord} glideRecord - The GlideRecord object representing a single record.
+   * @param {string|Array<string>} [fieldNames] - Optional. A comma-separated string or an array of specific
+   * field names to include. If not provided, all valid fields on the 'glideRecord' will be included.
+   * 'sys_id' is always included.
+   * @returns {object} A JavaScript object representing the record. Throws an error if 'glideRecord' is invalid
+   * or does not point to a valid record.
+   */
+  function convertGlideRecordToObject(glideRecord, fieldNames) {
+    if (!glideRecord || !glideRecord.isValidRecord()) {
+      throw new Error(`convertGlideRecordToObject: Invalid or empty GlideRecord object provided. It must point to a valid record.`);
     }
 
-    /**
-     * Converts a GlideRecord instance into a plain object.
-     * @param {GlideRecord} glideRecord - The GlideRecord instance.
-     * @returns {Object} A plain object representing the record.
-     **/
-    function objectify(glideRecord) {
-        if (glideRecord instanceof GlideRecord) {
-            return _toObject(glideRecord);
-        }
-        return glideRecord;
+    // Normalize the fieldNames array, ensuring sys_id is included if specific fields are requested.
+    var normalizedFieldNames = _getNormalizedFieldNames(fieldNames);
+
+    // Populate the objectRecord based on whether specific fields were requested or all fields are needed.
+    if (normalizedFieldNames.length > 0) {
+      return _populateObjectWithSelectedFields(glideRecord, normalizedFieldNames);
+
+    } else {
+      return _populateObjectWithAllFields(glideRecord);
+    }
+  }
+
+  /**
+   * @memberof GlideService
+   * @function convertObjectToGlideRecord
+   * @description Converts a given JavaScript object record (expected to have a 'sys_id') into a GlideRecord
+   * object. This is useful when you have a JavaScript representation of a record and need to interact with it
+   * using native GlideRecord methods (e.g., for more complex operations not covered by this service).
+   * @param {object} objectRecord - The JavaScript object representing a record, which must contain a 'sys_id'
+   * property with a 'value'.
+   * @param {object} objectRecord.sys_id - The 'sys_id' property, which should itself contain a 'value' property
+   * with the sys_id string.
+   * @param {string} objectRecord.sys_id.value - The actual sys_id string value of the record.
+   * @returns {GlideRecord|null} A GlideRecord object if the record is found, otherwise 'null'.
+   * @throws {Error} If the input 'objectRecord' or its 'sys_id' property is invalid or missing, or if table
+   * is invalid or inaccessible.
+   */
+  function convertObjectToGlideRecord(objectRecord) {
+    if (!objectRecord || !objectRecord.sys_id || !objectRecord.sys_id.value) {
+      throw new Error(`convertObjectToGlideRecord: Input objectRecord or its sys_id property is invalid or missing.`);
     }
 
-    /**
-     * Deletes a record by sys_id.
-     * @param {string} sysId - The sys_id of the record to delete.
-     * @returns {boolean} True if the record was deleted, otherwise false.
-     **/
-    function remove(sysId) {
-        const glideRecord = _create();
-        if (glideRecord.get(sysId)) {
-            return glideRecord.deleteRecord();
-        }
+    var glideRecord = _createGlideRecord();
+
+    // Attempt to retrieve the actual GlideRecord object using the sys_id from the input object.
+    if (glideRecord.get(objectRecord.sys_id.value)) {
+      return glideRecord;
     }
 
-    /**
-     * Retrieves a single record matching the query.
-     * @param {string} encodedQuery - The query string.
-     * @param {Array.<string>} fieldNames - The fields to retrieve.
-     * @returns {Object|null} The matching record object or null if not found.
-     **/
-    function single(encodedQuery, fieldNames) {
-        encodedQuery = encodedQuery ? encodedQuery.toString() : '';
-        const glideRecord = _create();
-        glideRecord.setLimit(1);
-        glideRecord.addEncodedQuery(encodedQuery);
-        glideRecord._query();
-        if (glideRecord._next()) {
-            return _toObject(glideRecord, fieldNames);
-        }
-        return null;
+    return null; // Return null if record not found by sys_id
+  }
+
+  /**
+   * @memberof GlideService
+   * @function deleteRecord
+   * @description Deletes a record from the service's configured table based on its 'sys_id'.
+   * @param {string} sysId - The unique 'sys_id' of the record to delete.
+   * @returns {boolean} 'true' if the record was successfully deleted; 'false' if the record was not found.
+   * @throws {Error} If 'sysId' is missing or invalid, or if the deletion of an *existing* record fails (e.g.,
+   * due to ACLs or system issues), or if table is invalid or inaccessible.
+   */
+  function deleteRecord(sysId) {
+    if (!sysId || typeof sysId !== 'string' || !_isSysId(sysId)) {
+      throw new Error(`deleteRecord: Invalid or missing sys_id provided: ${sysId}.`);
     }
 
-    /**
-     * Retrieves a single record by sys_id.
-     * @param {string} sysId - The sys_id of the record.
-     * @param {Array.<string>} fieldNames - The fields to retrieve.
-     * @returns {Object|null} The matching record object or null if not found.
-     **/
-    function singleId(sysId, fieldNames) {
-        const glideRecord = _create();
-        if (glideRecord.get(sysId)) {
-            return _toObject(glideRecord, fieldNames);
-        }
-        return null;
+    var glideRecord = _createGlideRecord();
+
+    if (glideRecord.get(sysId)) {
+      if (!glideRecord.deleteRecord()) {
+        throw new Error(`deleteRecord: Failed to delete record with sys_id: ${sysId}. Check permissions or system state.`);
+      }
+
+      return true; // Successfully deleted
     }
 
-    /**
-     * Updates an existing record.
-     * @param {string} sysId - The sys_id of the record.
-     * @param {Object} recordObject - The new data for the record.
-     * @returns {boolean} True if updated successfully, otherwise false.
-     **/
-    function update(sysId, recordObject) {
-        const glideRecordInit = _create();
-        if (glideRecordInit.get(sysId)) {
-            const glideRecord = _populate(glideRecordInit, recordObject);
-            if (glideRecord) {
-                return glideRecord.update();
-            }
-        }
-        return false;
+    return false; // Return false if record not found
+  }
+
+  /**
+   * @memberof GlideService
+   * @function deleteRecords
+   * @description Deletes multiple records that match a given encoded query. This method uses 'deleteMultiple()'
+   * for efficient bulk deletion.
+   * @param {string} encodedQuery - The encoded query string to select the records for deletion.
+   * @returns {void} This method does not return a value as 'deleteMultiple()' does not return success/failure.
+   * @throws {Error} If 'encodedQuery' is invalid or missing, or if table is invalid or inaccessible.
+   */
+  function deleteRecords(encodedQuery) {
+    var glideRecord = _createGlideRecord();
+
+    _applyGlideRecordEncodedQuery(glideRecord, encodedQuery, 'deleteRecords');
+
+    glideRecord._query();
+    glideRecord.deleteMultiple();
+  }
+
+  /**
+   * @memberof GlideService
+   * @function getDisplayValue
+   * @description Retrieves the **display value** of a specific field for the **first record found** that
+   * matches the provided encoded query. This is useful for fetching human-readable values, especially for
+   * reference fields.
+   * @param {string} encodedQuery - The encoded query string (e.g., 'active=true') or a specific 'sys_id' string.
+   * @param {string} fieldName - The name of the field whose display value is to be retrieved.
+   * @param {string} [orderBy] - Optional. The field name to order the results by.
+   * @param {string} [orderDirection='asc'] - Optional. The direction of the order ('asc' for ascending,
+   * 'desc' for descending). Defaults to 'asc'.
+   * @returns {string} The display value of the field, or an empty string if no record is found, the field
+   * does not exist, or the value is empty.
+   * @throws {Error} If 'fieldName' is missing, 'encodedQuery' is invalid, or table is invalid or inaccessible.
+   */
+  function getDisplayValue(encodedQuery, fieldName, orderBy, orderDirection) {
+    if (!fieldName) {
+      throw new Error(`getDisplayValue: Field name is required but not provided.`);
     }
 
-    /**
-     * Creates a new GlideRecord instance for the specified table.
-     * @param {boolean} initialize - Whether to initialize the record.
-     * @returns {GlideRecord} The new GlideRecord instance.
-     **/
-    function _create(initialize) {
-        const glideRecord = new GlideRecord(tableName);
-        if (initialize) {
-            glideRecord.initialize();
-        }
-        return glideRecord;
+    var objectRecord = getRecord(encodedQuery, fieldName, orderBy, orderDirection);
+
+    if (objectRecord && objectRecord[fieldName]) {
+      return objectRecord[fieldName].displayValue;
     }
 
-    /**
-     * Populates a GlideRecord with values from a given object.
-     * @param {GlideRecord} glideRecord - The GlideRecord instance to populate.
-     * @param {Object} recordObject - An object containing field values.
-     * @returns {GlideRecord} The populated GlideRecord instance.
-     **/
-    function _populate(glideRecord, recordObject) {
-        for (const fieldName in recordObject) {
-            if (glideRecord.isValidField(fieldName) && !fieldName.match(/^sys_/)) {
-                const element = glideRecord.getElement(fieldName);
-                const descriptor = element.getED();
-                const fieldType = descriptor.getInternalType();
-                let value = recordObject[fieldName] != null ? recordObject[fieldName] : '';
-                if (fieldType == 'currency2') {
-                    if (!value.toString().match(/^USD;.+/)) {
-                        value = 'USD;' + value;
-                    }
-                    glideRecord[fieldName].setDisplayValue(value);
-                } else if (fieldType == 'password') {
-                    glideRecord[fieldName].setDisplayValue(value);
-                } else {
-                    glideRecord.setValue(fieldName, value);
-                }
-            }
-        }
-        return glideRecord;
+    return ''; // Return empty string if record not found or field has no display value
+  }
+
+  /**
+   * @memberof GlideService
+   * @function getDisplayValues
+   * @description Retrieves an array of **display values** for a specific field from multiple records matching
+   * the encoded query.
+   * @param {string} encodedQuery - The encoded query string to filter records.
+   * @param {string} fieldName - The name of the field whose display values are to be retrieved.
+   * @param {string} [orderBy] - Optional. The field name to order the results by.
+   * @param {string} [orderDirection='asc'] - Optional. The direction of the order ('asc' or 'desc').
+   * Defaults to 'asc'.
+   * @param {number} [maxRecords=0] - Optional. The maximum number of records to retrieve display values from.
+   * Defaults to 0 (no limit).
+   * @returns {Array<string>} An array of display values. Each entry will be an empty string if the field
+   * doesn't exist on a record.
+   * @throws {Error} If 'fieldName' is missing, 'encodedQuery' is invalid, or table is invalid or inaccessible.
+   */
+  function getDisplayValues(encodedQuery, fieldName, orderBy, orderDirection, maxRecords) {
+    if (!fieldName) {
+      throw new Error(`getDisplayValues: Field name is required but not provided.`);
     }
 
-    /**
-     * Converts a GlideRecord result set into an array of objects.
-     * @param {GlideRecord} glideRecord - The GlideRecord instance to iterate through.
-     * @param {Array.<string>} fieldNames - Array of field names to include in the objects.
-     * @returns {Array.<Object>} An array of objects representing the records.
-     **/
-    function _toArray(glideRecord, fieldNames) {
-        const array = [];
-        while (glideRecord._next()) {
-            array.push(_toObject(glideRecord, fieldNames));
-        }
-        return array;
+    var objectRecords = getRecords(encodedQuery, fieldName, orderBy, orderDirection, maxRecords);
+
+    return objectRecords.map(function (objectRecord) {
+      if (objectRecord && objectRecord[fieldName]) {
+        return objectRecord[fieldName].displayValue;
+      }
+
+      return '';
+    });
+  }
+
+  /**
+   * @memberof GlideService
+   * @function getRecord
+   * @description Retrieves a **single record** from the table as a structured JavaScript object. If the
+   * 'encodedQuery' provided is a valid 'sys_id', it attempts to fetch the record directly by 'sys_id'.
+   * Otherwise, it applies the encoded query and returns the first matching record found.
+   * @param {string} encodedQuery - The encoded query string (e.g., 'active=true') or a specific 'sys_id' string.
+   * @param {string|Array<string>} [fieldNames] - Optional. A comma-separated string or an array of specific
+   * field names to retrieve. If not provided, all available fields for the record will be included.
+   * 'sys_id' is always included.
+   * @param {string} [orderBy] - Optional. The field name to order the results by when using an encoded query.
+   * @param {string} [orderDirection='asc'] - Optional. The direction of the order ('asc' or 'desc').
+   * Defaults to 'asc'.
+   * @returns {object|null} A JavaScript object representing the record, where each field is an object with
+   * 'name', 'label', 'value', and 'displayValue' properties. Returns 'null' if no record is found.
+   * @throws {Error} If 'encodedQuery' is invalid, or table is invalid or inaccessible.
+   */
+  function getRecord(encodedQuery, fieldNames, orderBy, orderDirection) {
+    var glideRecord = _createGlideRecord();
+
+    // Directly attempt to fetch by sys_id if the query looks like one.
+    if (_isSysId(encodedQuery) && glideRecord.get(encodedQuery)) {
+      return convertGlideRecordToObject(glideRecord, fieldNames);
     }
 
-    /**
-     * Converts a GlideRecord into an object with specified fields.
-     * @param {GlideRecord} glideRecord - The GlideRecord instance.
-     * @param {Array.<string>|string} [fieldNames] - The field names to include in the object.
-     * @returns {Object} An object representation of the record.
-     **/
-    function _toObject(glideRecord, fieldNames) {
-        fieldNames = fieldNames || [];
-        if (typeof fieldNames === 'string') {
-            fieldNames = fieldNames.split(',');
+    _applyGlideRecordEncodedQuery(glideRecord, encodedQuery, 'getRecord');
+    _applyGlideRecordOrdering(glideRecord, orderBy, orderDirection);
+
+    glideRecord.setLimit(1);
+    glideRecord._query();
+
+    if (glideRecord._next()) {
+      return convertGlideRecordToObject(glideRecord, fieldNames);
+    }
+
+    return null; // No record found for the given query
+  }
+
+  /**
+   * @memberof GlideService
+   * @function getRecordCount
+   * @description Retrieves the total number of records that match the given encoded query. This function uses
+   * 'GlideAggregate' for efficient counting, especially for large datasets.
+   * @param {string} encodedQuery - The encoded query string to filter records.
+   * @returns {number} The count of records matching the query. Returns '0' if no records match or
+   * 'encodedQuery' is empty.
+   * @throws {Error} If 'GlideAggregate' cannot be created for the table, or 'encodedQuery' is invalid.
+   */
+  function getRecordCount(encodedQuery) {
+    var glideAggregate = new GlideAggregate(tableName);
+
+    // Validate the GlideAggregate instance and the encoded query.
+    _validateGlideAggregate(glideAggregate, encodedQuery, 'getRecordCount');
+
+    glideAggregate.addEncodedQuery(encodedQuery);
+    glideAggregate.addAggregate('COUNT');
+    glideAggregate._query();
+
+    if (glideAggregate.next()) {
+      return parseInt(glideAggregate.getAggregate('COUNT'));
+    }
+
+    return 0; // Return 0 if no records
+  }
+
+  /**
+   * @memberof GlideService
+   * @function getRecords
+   * @description Retrieves **multiple records** from the table as an array of JavaScript objects. This
+   * function supports filtering by encoded query, ordering, limiting the number of records, and basic pagination.
+   * @param {string} encodedQuery - The encoded query string to filter records.
+   * @param {string|Array<string>} [fieldNames] - Optional. A comma-separated string or an array of specific
+   * field names to retrieve for each record. If not provided, all available fields will be included. 'sys_id'
+   * is always included.
+   * @param {string} [orderBy] - Optional. The field name to order the results by.
+   * @param {string} [orderDirection='asc'] - Optional. The direction of the order ('asc' or 'desc').
+   * Defaults to 'asc'.
+   * @param {number} [maxRecords=0] - Optional. The maximum number of records to retrieve. Defaults to 0
+   * (no limit).
+   * @param {number} [firstRecord=0] - Optional. The 0-based index of the first record to retrieve, used for
+   * pagination.
+   * @returns {Array<object>} An array of JavaScript objects, where each object represents a record with its
+   * selected fields. Returns an empty array if no records match the query.
+   * @throws {Error} If 'encodedQuery' is invalid, or table is invalid or inaccessible.
+   */
+  function getRecords(encodedQuery, fieldNames, orderBy, orderDirection, maxRecords, firstRecord) {
+    var glideRecord = _createGlideRecord();
+
+    _applyGlideRecordEncodedQuery(glideRecord, encodedQuery, 'getRecords');
+    _applyGlideRecordOrdering(glideRecord, orderBy, orderDirection);
+    _applyGlideRecordLimitAndOffset(glideRecord, maxRecords, firstRecord);
+
+    glideRecord._query();
+
+    if (glideRecord.hasNext()) {
+      return convertGlideRecordToArray(glideRecord, fieldNames);
+    }
+
+    return []; // No records found for the given query
+  }
+
+  /**
+   * @memberof GlideService
+   * @function getUniqueDisplayValues
+   * @description Retrieves an array of **unique display values** for a specific field from records matching
+   * the encoded query. The uniqueness is determined by the **display value**.
+   * @param {string} encodedQuery - The encoded query string to filter records.
+   * @param {string} fieldName - The name of the field to retrieve unique display values from.
+   * @param {string} [orderBy] - Optional. The field name to order the results by before extracting unique values.
+   * @param {string} [orderDirection='asc'] - Optional. The direction of the order ('asc' or 'desc').
+   * Defaults to 'asc'.
+   * @param {number} [maxRecords=0] - Optional. The maximum number of unique display values to return.
+   * Defaults to 0 (no limit).
+   * @returns {Array<string>} An array of unique display values.
+   * @throws {Error} If 'fieldName' is missing, 'encodedQuery' is invalid, or table is invalid or inaccessible.
+   */
+  function getUniqueDisplayValues(encodedQuery, fieldName, orderBy, orderDirection, maxRecords) {
+    if (!fieldName) {
+      throw new Error(`getUniqueDisplayValues: Field name is required but not provided.`);
+    }
+
+    // getRecords will throw if encodedQuery is invalid or table is invalid/inaccessible
+    return getRecords(encodedQuery, fieldName, orderBy, orderDirection).reduce(function (acc, objectRecord) {
+      maxRecords = maxRecords ? parseInt(maxRecords) : 0;
+
+      if (!maxRecords || acc.length < maxRecords) {
+        // Check if objectRecord[fieldName] exists before accessing .displayValue
+        var displayValue = (objectRecord && objectRecord[fieldName]) ? objectRecord[fieldName].displayValue : '';
+
+        if (displayValue && acc.indexOf(displayValue) === -1) { // Only add non-empty unique values
+          acc.push(displayValue);
         }
-        let recordObject = {};
-        if (fieldNames.length) {
-            if (fieldNames.length === 1) {
-                recordObject = _setField(recordObject, fieldNames[0], glideRecord);
-            } else {
-                fieldNames.forEach(function(fieldName) {
-                    recordObject = _setField(recordObject, fieldName, glideRecord);
-                });
-            }
+      }
+
+      return acc;
+    }, []);
+  }
+
+  /**
+   * @memberof GlideService
+   * @function getUniqueValues
+   * @description Retrieves an array of **unique actual values** (internal database values) for a specific
+   * field from records matching
+   * the encoded query. The uniqueness is determined by the **actual value**.
+   * @param {string} encodedQuery - The encoded query string to filter records.
+   * @param {string} fieldName - The name of the field to retrieve unique values from.
+   * @param {string} [orderBy] - Optional. The field name to order the results by before extracting unique values.
+   * @param {string} [orderDirection='asc'] - Optional. The direction of the order ('asc' or 'desc').
+   * Defaults to 'asc'.
+   * @param {number} [maxRecords=0] - Optional. The maximum number of unique values to return.
+   * Defaults to 0 (no limit).
+   * @returns {Array<string>} An array of unique actual field values.
+   * @throws {Error} If 'fieldName' is missing, 'encodedQuery' is invalid, or table is invalid or inaccessible.
+   */
+  function getUniqueValues(encodedQuery, fieldName, orderBy, orderDirection, maxRecords) {
+    if (!fieldName) {
+      throw new Error(`getUniqueValues: Field name is required but not provided.`);
+    }
+
+    // getRecords will throw if encodedQuery is invalid or table is invalid/inaccessible
+    return getRecords(encodedQuery, fieldName, orderBy, orderDirection).reduce(function (acc, objectRecord) {
+      maxRecords = maxRecords ? parseInt(maxRecords) : 0;
+
+      if (!maxRecords || acc.length < maxRecords) {
+        // Check if objectRecord[fieldName] exists before accessing .value
+        var value = (objectRecord && objectRecord[fieldName]) ? objectRecord[fieldName].value : '';
+
+        if (value && acc.indexOf(value) === -1) { // Only add non-empty unique values
+          acc.push(value);
+        }
+      }
+
+      return acc;
+    }, []);
+  }
+
+  /**
+   * @memberof GlideService
+   * @function getValue
+   * @description Retrieves the **actual value** (internal database value) of a specific field for the
+   * **first record found** that matches the provided encoded query.
+   * @param {string} encodedQuery - The encoded query string (e.g., 'active=true') or a specific 'sys_id' string.
+   * @param {string} fieldName - The name of the field whose value is to be retrieved.
+   * @param {string} [orderBy] - Optional. The field name to order the results by.
+   * @param {string} [orderDirection='asc'] - Optional. The direction of the order ('asc' or 'desc').
+   * Defaults to 'asc'.
+   * @returns {string} The actual value of the field, or an empty string if no record is found, the field
+   * does not exist, or the value is empty.
+   * @throws {Error} If 'fieldName' is missing, 'encodedQuery' is invalid, or table is invalid or inaccessible.
+   */
+  function getValue(encodedQuery, fieldName, orderBy, orderDirection) {
+    if (!fieldName) {
+      throw new Error(`getValue: Field name is required but not provided.`);
+    }
+
+    var objectRecord = getRecord(encodedQuery, fieldName, orderBy, orderDirection);
+
+    if (objectRecord && objectRecord[fieldName]) {
+      return objectRecord[fieldName].value;
+    }
+
+    return '';
+  }
+
+  /**
+   * @memberof GlideService
+   * @function getValues
+   * @description Retrieves an array of **actual values** for a specific field from multiple records matching
+   * the encoded query.
+   * @param {string} encodedQuery - The encoded query string to filter records.
+   * @param {string} fieldName - The name of the field whose values are to be retrieved.
+   * @param {string} [orderBy] - Optional. The field name to order the results by.
+   * @param {string} [orderDirection='asc'] - Optional. The direction of the order ('asc' or 'desc').
+   * Defaults to 'asc'.
+   * @param {number} [maxRecords=0] - Optional. The maximum number of records to retrieve values from.
+   * Defaults to 0 (no limit).
+   * @returns {Array<string>} An array of actual field values. Each entry will be an empty string if the field
+   * doesn't exist on a record.
+   * @throws {Error} If 'fieldName' is missing, 'encodedQuery' is invalid, or table is invalid or inaccessible.
+   */
+  function getValues(encodedQuery, fieldName, orderBy, orderDirection, maxRecords) {
+    if (!fieldName) {
+      throw new Error(`getValues: Field name is required but not provided.`);
+    }
+
+    var objectRecords = getRecords(encodedQuery, fieldName, orderBy, orderDirection, maxRecords);
+
+    return objectRecords.map(function (objectRecord) {
+      if (objectRecord && objectRecord[fieldName]) {
+        return objectRecord[fieldName].value;
+      }
+
+      return '';
+    });
+  }
+
+  /**
+   * @memberof GlideService
+   * @function insertRecord
+   * @description Inserts a new record into the service's configured table.
+   * @param {object} objectRecord - A JavaScript object containing the field names and their corresponding
+   * values for the new record. Each key in the object should represent a field name in the table.
+   * @returns {string} The 'sys_id' of the newly inserted record if successful.
+   * @throws {Error} If 'objectRecord' is invalid or empty, or if the insertion fails (e.g., due to invalid
+   * data or ACLs), or if table is invalid or inaccessible.
+   */
+  function insertRecord(objectRecord) {
+    if (!objectRecord || typeof objectRecord !== 'object' || Object.keys(objectRecord).length === 0) {
+      throw new Error(`insertRecord: Invalid or empty objectRecord provided for insertion.`);
+    }
+
+    var glideRecord = _createGlideRecord(true);
+
+    _setGlideRecordFields(glideRecord, objectRecord);
+
+    var insertedId = glideRecord.insert();
+
+    if (!insertedId) {
+      throw new Error(`insertRecord: Failed to insert record into table: ${tableName}. Check data validity or user permissions.`);
+    }
+
+    return insertedId;
+  }
+
+  /**
+   * @memberof GlideService
+   * @function recordExists
+   * @description Checks if at least one record exists in the table that matches the given encoded query.
+   * @param {string} encodedQuery - The encoded query string to check for matching records.
+   * @returns {boolean} 'true' if one or more records match the query; 'false' otherwise.
+   * @throws {Error} If 'encodedQuery' is invalid or missing, or if table is invalid or inaccessible.
+   */
+  function recordExists(encodedQuery) {
+    var glideRecord = _createGlideRecord();
+
+    _applyGlideRecordEncodedQuery(glideRecord, encodedQuery, 'recordExists');
+
+    glideRecord.setLimit(1);
+    glideRecord._query();
+
+    return glideRecord.hasNext();
+  }
+
+  /**
+   * @memberof GlideService
+   * @function updateRecord
+   * @description Updates an existing record in the service's configured table.
+   * @param {string} sysId - The 'sys_id' of the record to update.
+   * @param {object} objectRecord - A JavaScript object containing the field names and their new values.
+   * Only the fields present in this object will be updated.
+   * @returns {string} The 'sys_id' of the updated record if successful. Returns an empty string if the record
+   * is not found.
+   * @throws {Error} If 'sysId' or 'objectRecord' are invalid, or if the update of an *existing* record fails
+   * (e.g., due to ACLs or invalid data), or if table is invalid or inaccessible.
+   */
+  function updateRecord(sysId, objectRecord) {
+    if (!sysId || typeof sysId !== 'string' || !_isSysId(sysId)) {
+      throw new Error(`updateRecord: Invalid or missing sys_id provided: ${sysId}.`);
+    }
+
+    if (!objectRecord || typeof objectRecord !== 'object' || Object.keys(objectRecord).length === 0) {
+      throw new Error(`updateRecord: Invalid or empty objectRecord provided for update of sys_id: ${sysId}.`);
+    }
+
+    var glideRecord = _createGlideRecord();
+
+    if (glideRecord.get(sysId)) {
+      _setGlideRecordFields(glideRecord, objectRecord);
+
+      var updatedId = glideRecord.update();
+
+      if (!updatedId) {
+        throw new Error(`updateRecord: Failed to update record with sys_id: ${sysId}. Check data validity or user permissions.`);
+      }
+
+      return updatedId;
+    }
+
+    return ''; // Return empty string if record not found
+  }
+
+  /**
+   * @memberof GlideService
+   * @function updateRecords
+   * @description Updates multiple records that match a given encoded query with the specified field values.
+   * This method uses 'updateMultiple()' for efficient bulk updates, which is generally more performant than
+   * iterating and updating each record individually.
+   * @param {string} encodedQuery - The encoded query string to select the records for update.
+   * @param {object} objectRecord - A JavaScript object containing the field names and their new values to
+   * apply to all matching records.
+   * @returns {void} This method does not return a value as 'updateMultiple()' does not return success/failure.
+   * @throws {Error} If 'encodedQuery' or 'objectRecord' are invalid or missing, or if table is invalid or
+   * inaccessible.
+   */
+  function updateRecords(encodedQuery, objectRecord) {
+    var glideRecord = _createGlideRecord();
+
+    _applyGlideRecordEncodedQuery(glideRecord, encodedQuery, 'updateRecords');
+
+    if (!objectRecord || typeof objectRecord !== 'object' || Object.keys(objectRecord).length === 0) {
+      throw new Error(`updateRecords: Invalid or empty objectRecord provided for bulk update with query: ${encodedQuery}.`);
+    }
+
+    _setGlideRecordFields(glideRecord, objectRecord);
+
+    glideRecord.updateMultiple();
+  }
+
+  /*
+   * PRIVATE HELPER FUNCTIONS
+   * These functions are internal to GlideService and are not exposed publicly.
+   * They are ordered alphabetically for easier navigation.
+   */
+
+  /**
+   * @private
+   * @function _applyGlideRecordEncodedQuery
+   * @description Validates the provided encoded query string and, if valid and not empty, applies it
+   * to the given GlideRecord instance. Throws an error if the query is invalid or missing when required.
+   * This function combines validation and query application for common use cases.
+   * @param {GlideRecord} glideRecord - The GlideRecord instance to apply the query to.
+   * @param {string} encodedQuery - The encoded query string to validate and apply.
+   * @param {string} functionName - The name of the calling function, used for error messages.
+   * @returns {void}
+   * @throws {Error} If `encodedQuery` is invalid or empty.
+   */
+  function _applyGlideRecordEncodedQuery(glideRecord, encodedQuery, functionName) {
+    _validateEncodedQueryString(glideRecord, encodedQuery, functionName);
+
+    glideRecord.addEncodedQuery(encodedQuery);
+  }
+
+  /**
+   * @private
+   * @function _applyGlideRecordLimitAndOffset
+   * @description Applies limits and offset (pagination) to a GlideRecord query.
+   * @param {GlideRecord} glideRecord - The GlideRecord instance to apply limits to.
+   * @param {number} maxRecords - The maximum number of records to retrieve.
+   * @param {number} firstRecord - The 0-based index of the first record to retrieve.
+   */
+  function _applyGlideRecordLimitAndOffset(glideRecord, maxRecords, firstRecord) {
+    maxRecords = maxRecords ? parseInt(maxRecords) : 0;
+    firstRecord = firstRecord ? parseInt(firstRecord) : 0;
+
+    if (maxRecords && firstRecord) {
+      glideRecord.chooseWindow(firstRecord, maxRecords);
+
+    } else if (maxRecords) {
+      glideRecord.setLimit(maxRecords);
+    }
+  }
+
+  /**
+   * @private
+   * @function _applyGlideRecordOrdering
+   * @description Applies ordering (ascending or descending) to a GlideRecord query.
+   * @param {GlideRecord} glideRecord - The GlideRecord instance to apply ordering to.
+   * @param {string} [orderBy] - The field name to order the results by.
+   * @param {string} [orderDirection='asc'] - The direction of the order ('asc' or 'desc').
+   */
+  function _applyGlideRecordOrdering(glideRecord, orderBy, orderDirection) {
+    if (orderBy) {
+      if (orderDirection === 'desc') {
+        glideRecord.orderByDesc(orderBy);
+
+      } else {
+        glideRecord.orderBy(orderBy);
+      }
+    }
+  }
+
+  /**
+   * @private
+   * @function _createGlideRecord
+   * @description Creates a new instance of 'GlideRecord' for the service's configured table. Optionally
+   * initializes the GlideRecord, which is necessary before inserting a new record.
+   * @param {boolean} [initialize=false] - If 'true', 'glideRecord.initialize()' is called, preparing the
+   * record for insertion.
+   * @returns {GlideRecord} A new 'GlideRecord' instance.
+   * @throws {Error} If the table name is invalid or the GlideRecord cannot be created or accessed (e.g., due
+   * to insufficient permissions).
+   */
+  function _createGlideRecord(initialize) {
+    var glideRecord = new GlideRecord(tableName);
+
+    if (!glideRecord.isValid()) {
+      throw new Error(`_createGlideRecord: Failed to create GlideRecord for table: ${tableName}. Table may not exist or user lacks appropriate access rights.`);
+    }
+
+    if (initialize) {
+      glideRecord.initialize();
+    }
+
+    return glideRecord;
+  }
+
+  /**
+   * @private
+   * @function _getNormalizedFieldNames
+   * @description Normalizes the 'fieldNames' into an array and ensures 'sys_id' is included
+   * if specific fields are being requested (i.e., the returned array is not empty).
+   * @param {string|Array<string>} fieldNames - The input field names.
+   * @returns {Array<string>} A new array of normalized field names, including 'sys_id' if applicable.
+   */
+  function _getNormalizedFieldNames(fieldNames) {
+    // Default to an empty array if no field names are provided.
+    var normalizedFieldNames = fieldNames || [];
+
+    // Convert string input to an array of field names.
+    if (typeof normalizedFieldNames === 'string') {
+      normalizedFieldNames = normalizedFieldNames.split(',').map(function (fieldName) {
+        return fieldName.trim();
+      });
+    }
+
+    // If specific fields are requested (array is not empty), ensure 'sys_id' is always part of the list.
+    if (normalizedFieldNames.length > 0 && normalizedFieldNames.indexOf('sys_id') === -1) {
+      normalizedFieldNames.push('sys_id');
+    }
+
+    return normalizedFieldNames;
+  }
+
+  /**
+   * @private
+   * @function _isSysId
+   * @description Checks if a given string is a valid ServiceNow sys_id format (32 lowercase hexadecimal characters).
+   * @param {string} string - The string to validate.
+   * @returns {boolean} 'true' if the string matches the sys_id format, 'false' otherwise.
+   */
+  function _isSysId(string) {
+    return typeof string === 'string' && string.length === 32 && /^[a-f0-9]{32}$/.test(string);
+  }
+
+  /**
+   * @private
+   * @function _populateObjectWithAllFields
+   * @description Populates a JavaScript object with data from all valid fields of a GlideRecord.
+   * This is used when no specific field names are provided for conversion.
+   * @param {GlideRecord} glideRecord - The GlideRecord instance.
+   * @returns {object} The populated JavaScript object.
+   */
+  function _populateObjectWithAllFields(glideRecord) {
+    var objectRecord = {};
+
+    for (var fieldName in glideRecord) {
+      _setField(objectRecord, fieldName, glideRecord);
+    }
+
+    return objectRecord;
+  }
+
+  /**
+   * @private
+   * @function _populateObjectWithSelectedFields
+   * @description Populates a JavaScript object with data from specified fields of a GlideRecord.
+   * @param {GlideRecord} glideRecord - The GlideRecord instance.
+   * @param {Array<string>} fieldNames - The names of the fields to extract.
+   * @returns {object} The populated JavaScript object.
+   */
+  function _populateObjectWithSelectedFields(glideRecord, fieldNames) {
+    var objectRecord = {};
+
+    fieldNames.forEach(function (fieldName) {
+      _setField(objectRecord, fieldName, glideRecord);
+    });
+
+    return objectRecord;
+  }
+
+  /**
+   * @private
+   * @function _setField
+   * @description Sets field information (name, label, value, displayValue) from a GlideRecord into a
+   * target JavaScript object.
+   * @param {object} objectRecord - The object to which the field information will be added.
+   * @param {string} fieldName - The name of the field to retrieve from the GlideRecord.
+   * @param {GlideRecord} glideRecord - The GlideRecord instance from which to get the field data.
+   * @returns {void}
+   */
+  function _setField(objectRecord, fieldName, glideRecord) {
+    // Only process if the field is valid on the GlideRecord
+    if (glideRecord.isValidField(fieldName)) {
+      var element = glideRecord.getElement(fieldName);
+      var value = glideRecord.getValue(fieldName);
+      var displayValue = glideRecord.getDisplayValue(fieldName);
+
+      // Populate the field details (name, label, value, displayValue)
+      objectRecord[fieldName] = {
+        name: fieldName,
+        label: element.getLabel(),
+        value: value || '',
+        displayValue: displayValue || ''
+      };
+    }
+  }
+
+  /**
+   * @private
+   * @function _setGlideRecordFields
+   * @description Iterates over an `objectRecord` and sets the corresponding fields on a `GlideRecord` instance.
+   * This is used for `insert` and `update` operations. It handles specific field types to ensure proper assignment.
+   * It is designed to perform a side effect by modifying the `glideRecord` object in place and does not return a value.
+   * @param {GlideRecord} glideRecord - The GlideRecord instance to set fields on.
+   * @param {object} objectRecord - An object where keys are field names and values are the values to set.
+   * Expected formats for specific types:
+   * - Date/DateTime: JavaScript Date object, or string compatible with GlideDate/DateTime.
+   * - Currency: Number, string representing a number, or string in 'CCC;Amount' format (e.g., 'USD;100.50').
+   * - Glide List: Array of sys_ids/values, or comma-separated string.
+   * @returns {void}
+   */
+  function _setGlideRecordFields(glideRecord, objectRecord) {
+    for (var fieldName in objectRecord) {
+      // Prevent setting invalid fields and fields starting with 'sys_'
+      if (glideRecord.isValidField(fieldName) && !fieldName.match(/^sys_/)) {
+        var fieldType = glideRecord.getElement(fieldName).getED().getInternalType();
+        var fieldValue = objectRecord[fieldName] != null ? objectRecord[fieldName] : '';
+
+        if (fieldType === 'currency2') {
+          // Set default currency code of 'USD' if no currency code is provided
+          if (!fieldValue.match(/^.+;[\d.]+/)) {
+            fieldValue = 'USD;' + fieldValue;
+          }
+
+          glideRecord[fieldName].setDisplayValue(fieldValue);
+
+        } else if (fieldType === 'password' || fieldType === 'password2') {
+          glideRecord[fieldName].setDisplayValue(fieldValue);
+
         } else {
-            for (var fieldName in glideRecord) {
-                recordObject = _setField(recordObject, fieldName, glideRecord);
-            }
+          glideRecord.setValue(fieldName, fieldValue);
         }
-        return recordObject;
+      }
+    }
+  }
+
+  /**
+   * @private
+   * @function _validateEncodedQueryString
+   * @description Validates an encoded query string using a GlideRecord instance's `isValidEncodedQuery` method.
+   * Throws an error if the query is invalid or missing.
+   * @param {GlideRecord} glideRecord - A valid GlideRecord instance to perform the validation.
+   * @param {string} encodedQuery - The encoded query string to validate.
+   * @param {string} functionName - The name of the calling function, used for error messages.
+   * @throws {Error} If `encodedQuery` is invalid or empty.
+   */
+  function _validateEncodedQueryString(glideRecord, encodedQuery, functionName) {
+    if (!encodedQuery || typeof encodedQuery !== 'string' || !glideRecord.isValidEncodedQuery(encodedQuery)) {
+      throw new Error(`${functionName}: Invalid or empty encodedQuery provided: '${encodedQuery}'. A valid query is mandatory.`);
+    }
+  }
+
+  /**
+   * @private
+   * @function _validateGlideAggregate
+   * @description Validates a GlideAggregate instance and ensures the associated table exists and is accessible.
+   * Also validates the encoded query string using a temporary GlideRecord. This function does not return a value.
+   * @param {GlideAggregate} glideAggregate - The GlideAggregate instance to validate.
+   * @param {string} encodedQuery - The encoded query string to validate.
+   * @param {string} functionName - The name of the calling function, for error messages.
+   * @returns {void}
+   * @throws {Error} If GlideAggregate instance is invalid, or the query is invalid.
+   */
+  function _validateGlideAggregate(glideAggregate, encodedQuery, functionName) {
+    if (!(glideAggregate instanceof GlideAggregate) || !glideAggregate.isValid()) {
+      throw new Error(`${functionName}: Invalid GlideAggregate instance provided. 
+        It must be an initialized and valid GlideAggregate for table '${tableName}'.`);
     }
 
-    /**
-     * Sets a field value and display value in the record object.
-     * @param {Object} recordObject - The object to populate.
-     * @param {string} fieldName - The name of the field.
-     * @param {GlideRecord} glideRecord - The GlideRecord instance.
-     * @returns {Object} The updated record object.
-     **/
-    function _setField(recordObject, fieldName, glideRecord) {
-        if (glideRecord.isValidField(fieldName)) {
-            const value = glideRecord.getValue(fieldName);
-            const displayValue = glideRecord.getDisplayValue(fieldName);
-            recordObject[fieldName] = {
-                value: value != null ? value : '',
-                displayValue: displayValue != null ? displayValue : ''
-            };
-        }
-        return recordObject;
+    // A temporary GlideRecord is needed to validate the query string, as GlideAggregate does not have isValidEncodedQuery.
+    var glideRecordForValidation = new GlideRecord(tableName);
+
+    if (!glideRecordForValidation.isValid()) {
+      // This error indicates an issue with the table itself or permissions, even if GlideAggregate initialized.
+      throw new Error(`${functionName}: Failed to create temporary GlideRecord for query validation on table: '${tableName}'. 
+        Table may not exist or user lacks appropriate access rights.`);
     }
+
+    _validateEncodedQueryString(glideRecordForValidation, encodedQuery, functionName);
+  }
 };]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2025-02-11 19:20:31</sys_created_on>
         <sys_id>c545af1f53af5e10829a70c0a0490e56</sys_id>
-        <sys_mod_count>13</sys_mod_count>
+        <sys_mod_count>15</sys_mod_count>
         <sys_name>GlideService</sys_name>
         <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
         <sys_policy/>
         <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
         <sys_update_name>sys_script_include_c545af1f53af5e10829a70c0a0490e56</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2025-04-14 20:19:36</sys_updated_on>
+        <sys_updated_on>2025-07-18 23:34:30</sys_updated_on>
     </sys_script_include>
 </record_update>

@@ -1,0 +1,648 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_648117_codevault.ObjectManager</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>Functions to manage objects in Javascript.&#13;
+&#13;
+Courtesy of Tim Bremm.&#13;
+&#13;
+Testing TBD. </description>
+        <mobile_callable>false</mobile_callable>
+        <name>ObjectManager</name>
+        <sandbox_callable>false</sandbox_callable>
+        <script><![CDATA[/**SNDOC
+	@name ObjectManager
+	@description A utility class for working with objects, including things like object structure and data type validation, getting nested sub-objects and values by their JSON paths, getting object values, etc..
+	@example
+	var ObjUtils = new global.ObjectManager();
+	@returns {Object} An ObjectManager instance.
+	*/
+var ObjectManager = Class.create();
+ObjectManager.prototype = {
+    initialize: function() {},
+
+    /**SNDOC
+		@name getObjPropertyByPath
+		@description Walks the given path in the given object and returns the value. You can specify array elements like this: "key1.my_array.0".
+Note: When this returns an object, it actually returns a reference to the object. This means that changing a value within the returned object also changes that value in the original object.
+		@param {Object} [in_obj] - The object to traverse.
+		@param {String} [path] - A string of the dot-walked path. For example: "key1.my_array.2.array_element_2_object_key"
+		@example
+		var obj_to_check = {
+			"key1": 5,
+			"key2": {
+				"a": true,
+				"b": [
+					{
+						"c": "d"
+					},
+					{
+						"e": "f",
+						"g": "h"
+					}
+				]
+			}
+		};
+		var path = "key2.b.1";
+		var ObjUtils = new global.ObjectManager();
+		var value = ObjUtils.getObjPropertyByPath(obj_to_check, path);
+		gs.info(JSON.stringify(value));
+		// {"e":"f","g":"h"}
+
+		// This value is actually a reference, not a new object
+		value.e = "new value";
+		gs.info(JSON.stringify(obj_to_check));
+		// {"key1":5,"key2":{"a":true,"b":[{"c":"d"},{"e":"new value","g":"h"}]}}
+		@returns {Any} The value found at the end of the path, which could be any primitive type, an array, an object, etc.
+	*/
+    getObjPropertyByPath: function(in_obj, path) {
+        var ar_path = path.split('.');
+        var obj = in_obj;
+        for (i = 0; i < ar_path.length - 1; i++) {
+            obj = obj[ar_path[i]];
+        }
+        return obj[ar_path[ar_path.length - 1]];
+    },
+
+    /**SNDOC
+    	@name getObjIndexFromArrayByPropValue
+    	@description This takes an array of objects and returns the index of the first object that has the specified property with the specified value.
+    	@param {Array of objects} [arr] - An array of objects whose properties include the specified key.
+    	@param {String} [key_to_search] - The name of the key whose value we are trying to match.
+    	@param {String} [val_of_key_to_search] - The value of key_to_search that we are trying to match.
+    	@example
+		var arr = [
+			{
+				"foo": "bar",
+				"baz": true
+			},
+			{
+				"foo": "biz",
+				"baz": false
+			}
+		];
+		var ObjUtils = new global.ObjectManager();
+		var result = ObjUtils.getObjIndexFromArrayByPropValue(arr, "foo", "biz");
+		gs.info(result);
+		// 1
+    	@returns {Number} The index of the object in the array, or -1 if not found.
+    	*/
+    getObjIndexFromArrayByPropValue: function(arr, key_to_search, val_of_key_to_search) {
+        // The arrow operator below is valid, but I hate red squiggles, even if they're wrong
+        // var index = arr.map(x => x[key_to_search]).indexOf(val_of_key_to_search);
+        var index = arr.map(function(x) {
+            return x[key_to_search];
+        }).indexOf(val_of_key_to_search);
+        return index;
+    },
+
+    /**SNDOC
+    	@name getObjFromArrayByPropValue
+    	@description This takes an array of objects and returns the first object that has the specified property with the specified value.
+    	@param {Array of objects} [arr] - An array of objects whose properties include the specified key.
+    	@param {String} [key_to_search] - The name of the key whose value we are trying to match.
+    	@param {String} [val_of_key_to_search] - The value of key_to_search that we are trying to match.
+    	@example
+		var arr = [
+			{
+				"foo": "bar",
+				"baz": true
+			},
+			{
+				"foo": "biz",
+				"baz": false
+			}
+		];
+		var ObjUtils = new global.ObjectManager();
+		var result = ObjUtils.getObjFromArrayByPropValue(arr, "foo", "biz");
+		gs.info(JSON.stringify(result));
+		// {"foo": "biz", "baz": false}
+    	@returns {Object | Null} The object that has the specified key with the specified value, or null if the object was not found.
+    	*/
+    getObjFromArrayByPropValue: function(arr, key_to_search, val_of_key_to_search) {
+        // The arrow operator below is valid, but I hate red squiggles, even if they're wrong
+        // var result = arr.find(x => x[key_to_search] === val_of_key_to_search);
+        var result = arr.find(function(x) {
+            return x[key_to_search] === val_of_key_to_search;
+        });
+        if (!gs.nil(result)) {
+            return result;
+        }
+        return null;
+    },
+
+    /**SNDOC
+    	@name getObjPropValueFromArrayByOtherObjPropValue
+    	@description This searches an array of objects for an object with the specified key-value pair, and returns the value of the specified key from that object.
+    	@param {Array of objects} [arr] - An array of objects whose properties include the specified key.
+    	@param {String} [key_to_search] - The name of the key whose value we are trying to match.
+    	@param {String} [val_of_key_to_search] - The value of key_to_search that we are trying to match.
+    	@param {String} [key_of_return_val] - Key in the specified object whose value is to be returned.
+    	@example
+		var arr = [
+			{
+				"foo": "bar",
+				"baz": true,
+				"fiz": "wiz"
+			},
+			{
+				"foo": "biz",
+				"baz": false,
+				"fiz": 42
+			}
+		];
+		var ObjUtils = new global.ObjectManager();
+		var result = ObjUtils.getObjPropValueFromArrayByOtherObjPropValue(arr, "foo", "biz", "fiz");
+		gs.info(result);
+		// 42
+    	@returns {Any | Null} The value of the key_of_return_val property of the object whose key_to_search property's value matches val_of_key_to_search, or null if no match is found.
+    	*/
+    getObjPropValueFromArrayByOtherObjPropValue: function(arr, key_to_search, val_of_key_to_search, key_of_return_val) {
+        var result = this.getObjFromArrayByPropValue(arr, key_to_search, val_of_key_to_search);
+        if (!gs.nil(result)) {
+            return result[key_of_return_val];
+        }
+        return null;
+    },
+
+    /**SNDOC
+		@name validateObj
+		@description Checks that the given object has the given keys with the specified data types.
+		@param {Object} [in_obj] - Any object to check
+		@param {Array of objects} [props_to_check] - An array of properties to check, including the property's path and expected data type(s).
+To ensure a property doesn't exist, or to consider it optional, then set type to "undefined" or include "undefined" in the type array, respectively.
+For example, if the property "foo" could either be a string or not exist, then set "type" to ["string", "undefined"].
+To address an array element, simply add its index to the path.
+For example, to address the "name" property of the 3rd object element of an array whose key is "my_array", just give: "my_array.2.name".
+[
+	{
+	"path": "path.to.property",
+	"type": "string of a single valid type or an array of strings containing valid types"
+	}
+]
+		@example
+		var keys_to_check = [
+			{
+				"path": "level_1_1.obj.object",
+				"type": "object"
+			},
+			{
+				"path": "level_1_1.obj.string",
+				"type": "boolean"
+			},
+			{
+				"path": "level_1_2.1.arr_prop",
+				"type": "string"
+			},
+			{
+				"path": "optional_property",
+				"type": ["string", "undefined"]
+			}
+		];
+
+		var obj_to_check = {
+			"level_1_1": {
+				"obj": {
+					"object": {
+						"obj_key": "foo"
+					},
+					"string": "bar"
+				}
+			},
+			"level_1_2": [
+				{
+					"arr_prop": true
+				},
+				{
+					"arr_prop": "baz"
+				}
+			]
+		}
+		var ObjUtils = new global.ObjectManager();
+		var result = ObjUtils.validateObj(obj_to_check, keys_to_check);
+		gs.info(JSON.stringify(result, null, 2));
+		// {
+		//   "is_valid": false,
+		//   "prop_results": [
+		//     {
+		//       "path": "level_1_1.obj.object",
+		//       "is_valid_type": true,
+		//       "required_type": "object",
+		//       "actual_type": "object"
+		//     },
+		//     {
+		//       "path": "level_1_1.obj.string",
+		//       "is_valid_type": false,
+		//       "required_type": "boolean",
+		//       "actual_type": "string"
+		//     },
+		//     {
+		//       "path": "level_1_2.1.arr_prop",
+		//       "is_valid_type": true,
+		//       "required_type": "string",
+		//       "actual_type": "string"
+		//     },
+		//     {
+		//       "path": "optional_property",
+		//       "is_valid_type": true,
+		//       "required_type": [
+		//         "string",
+		//         "undefined"
+		//       ],
+		//       "actual_type": "undefined"
+		//     }
+		//   ]
+		// }
+
+		@returns {Object} An object with the overall success and an array of objects with each property's path, if its datatype is correct, what its data type should be, and what its datatype actually is.
+{
+	"is_valid": boolean,
+	"prop_results": [{
+		"path": string,
+		"is_valid_type": boolean,
+		"required_type": string or array of strings depending on the input,
+		"actual_type": string
+	}]
+}
+		*/
+    validateObj: function(in_obj, props_to_check) {
+        var prop_results = [];
+        var top_level_valid_flag = true;
+        var is_valid_type = true;
+        for (var p in props_to_check) {
+            var prop = props_to_check[p];
+
+            // Note: The comparison for is_valid_type throws this Codeworks error:
+            // "Invalid typeof expression" [...] "should be comparing to a string literal"
+            // This is a false positive because prop.type is a string
+            var actual_type = typeof this.getObjPropertyByPath(in_obj, prop.path, prop.type);
+
+            // Check against either an array of acceptable types, or a single type (for backwards compatibility)
+            if (Array.isArray(prop.type)) {
+                is_valid_type = prop.type.indexOf(actual_type) >= 0;
+            } else {
+                // Could use indexOf for both arrays and strings, but this avoids the case where 
+                //  prop.type is not a valid type, but is still a substring of a valid type
+                //  E.g., if prop.type = "stri" and the actual_type is "string", then indexOf would return 0, not -1.
+                is_valid_type = prop.type.toString() === actual_type;
+            }
+
+            prop_results.push({
+                "path": prop.path,
+                "is_valid_type": is_valid_type,
+                "required_type": prop.type,
+                "actual_type": actual_type
+            });
+
+            if (!is_valid_type) {
+                top_level_valid_flag = false;
+            }
+        }
+        var results = {
+            "is_valid": top_level_valid_flag,
+            "prop_results": prop_results
+        };
+        return results;
+    },
+
+    /**SNDOC
+		@name calculateObjectSizeBytes
+		@description Recursively walks the given object, adds up the size of each string, number, and boolean (plus the same in any sub-objects) values and of the keys themselves in bytes, and returns the total.
+		NOTE: This is still an approximation because *javascript*.
+		@param {Object} [obj] - Any object.
+		@example
+		var obj = {
+			"key_1": "1234567",
+			"key_2": "123456",
+			"key_3": 10,
+			"key_4": true,
+			"key_5": {
+				"x": "a",
+				"y": "b",
+				"z": "c"
+			}
+		};
+		var objUtils = new global.ObjectManager();
+		gs.info(objUtils.calculateObjectSizeBytes(obj));
+		// 56
+		@returns {Number} The number of bytes consumed by the object in memory.
+		*/
+    calculateObjectSizeBytes: function(obj) {
+        var totalSize = 0;
+        // Get the keys of the object
+        var keys = Object.keys(obj);
+        // Loop through each key
+        for (var key in keys) {
+            // Get the value of the key
+            var value = obj[keys[key]];
+            // Account for the size of the key itself
+            totalSize += keys[key].length;
+            // Check the type of the value
+            if (typeof value === "string") {
+                // If the value is a string, add its length to the total size
+                totalSize += value.length;
+            } else if (typeof value === "number") {
+                // If the value is a number, add 8 bytes to the total size
+                totalSize += 8;
+            } else if (typeof value === "boolean") {
+                // If the value is a boolean, add 4 bytes to the total size
+                totalSize += 4;
+            } else if (typeof value === "object" && value !== null) {
+                // If the value is an object and not null, recursively call the function and add the result to the total size
+                totalSize += this.calculateObjectSizeBytes(value);
+            }
+            // Ignore other types of values such as undefined, function, symbol, etc.
+        }
+        // Return the total size
+        return totalSize;
+    },
+
+
+    /**SNDOC
+		@name sortArrayObjectsByProperty
+		@description Takes an array of objects and returns a new array sorted by the input array's objects based on the values of their given top-level, toString()-able property.
+The property values that are checked are coerced to lowercase strings for the comparison. The sort order is ascending (A before Z).
+		@param {Array of objects} [arr] - An array of objects.
+		@param {String} [prop] - The property within the array's objects that will be used as the sort parameter.
+		@example
+		var arr = [
+			{
+				"key": "D",
+				"value": "bar"
+			},
+			{
+				"key": "f",
+				"value": "foo"
+			},
+			{
+				"key": "AbC",
+				"value": "baz"
+			},
+			{
+				"key": "_Gh",
+				"value": "biz"
+			}
+		];
+		var ObjUtils = new global.ObjectManager();
+		var sorted = ObjUtils.sortArrayObjectsByProperty(arr, "key");
+		gs.info(JSON.stringify(sorted, null, 2));
+		// [
+		// 	{
+		// 		"key": "_Gh",
+		// 		"value": "biz"
+		// 	},
+		// 	{
+		// 		"key": "AbC",
+		// 		"value": "baz"
+		// 	},
+		// 	{
+		// 		"key": "D",
+		// 		"value": "bar"
+		// 	},
+		// 	{
+		// 		"key": "f",
+		// 		"value": "foo"
+		// 	}
+		// ]
+
+		@returns {Array of objects} A new array containing the objects in the given array, but sorted (ascending) based on the values of their given top-level, toString()-able property.
+The property values that are checked are coerced to lowercase strings for the comparison.
+		*/
+    sortArrayObjectsByProperty: function(arr, prop) {
+        var sorted = arr.sort(function(a, b) {
+            return (a[prop].toString().toLowerCase() <= b[prop].toString().toLowerCase()) ? -1 : (((a[prop].toString().toLowerCase() > b[prop].toString().toLowerCase()) ? 1 : 0));
+        });
+        return sorted;
+    },
+
+    /**SNDOC
+		@name createOrUpdateRecordFromObject
+		@description Creates or updates a record on the given table based upon the inputs.
+		@param {String} [table] - A valid SN table name.
+		@param {Array of objects} [target_properties_obj] - An array of target properties objects.
+[{
+    "field": // {String} The field to set.
+    "value": // {Any} The value to which the field will be set. If reference.is_reference is true, then this will be used for the reference lookup query.
+    "append_to_existing_value": // {Boolean} True to append to the existing value, false to replace. No effect if reference.is_reference is true. References will never append, so to populate a GlideList, pass in a comma-delimited string of sys_ids.
+    "reference": {
+        "is_reference": // {Boolean} True if the field is of type reference, false otherwise.
+        "look_up_field": {String} The field on the referenced table whose value should match the above value. No effect if reference.is_reference is false.
+        "referenced_table": {String} The referenced table's name. No effect if reference.is_reference is false.
+    }
+}]
+		@param {Boolean} [attempt_update] - True to try and find a record matching update_attempt_enc_query and update it, false to only insert.
+		@param {Boolean} [insert_if_update_rec_not_found] - True to insert a record if attempt_update is true and a record couldn't be found, false to abort the process with no record updates or inserts if an existing record could not be found.
+		@param {String} [update_attempt_enc_query] - A GlideRecord encoded query to find a record to update (if updating). No effect if attempt_update is false.
+		@example
+		// Update an existing incident's assignment group
+		var table = "incident";
+		var target_properties_obj = [{
+			"field": "assignment_group",
+			"value": "A valid sys_user_group.name value",
+			"append_to_existing_value": false,
+			"reference": {
+				"is_reference": true,
+				"look_up_field": "name",
+				"referenced_table": "sys_user_group"
+			}
+		}];
+		var attempt_update = true;
+		var insert_if_update_rec_not_found = true;
+		var update_attempt_enc_query = "active=true^number=INC12345678";
+		var ObjUtils = new global.ObjectManager();
+		var result_sys_id = ObjUtils.createOrUpdateRecordFromObject(table, target_properties_obj, attempt_update, insert_if_update_rec_not_found, update_attempt_enc_query);
+		if (result_sys_id === "") {
+			// Handle error
+		} else {
+			gs.info(result_sys_id);
+			// The sys_id of the new or updated record
+		}
+		@returns {String} The sys_id of the new or updated record, or an empty string on error.
+		*/
+    createOrUpdateRecordFromObject: function(table, target_properties_obj, attempt_update, insert_if_update_rec_not_found, update_attempt_enc_query) {
+        var input_validation_results = this.validateCreateOrUpdateRecordFromObjectInputs(table, target_properties_obj, attempt_update, insert_if_update_rec_not_found, update_attempt_enc_query);
+        if (input_validation_results.length > 0) {
+            throw new Error(gs.getMessage("[createOrUpdateRecordFromObject] Error - invalid inputs. Validation results:\n" + input_validation_results));
+        }
+
+        var gr_target = new GlideRecord(table);
+        var attempt_update_flag = attempt_update;
+
+        // Look for a matching record if we're trying to update and if we have something in the encoded query
+        if (attempt_update && update_attempt_enc_query.toString().length > 0) {
+            // Validate the encoded query
+            if (!gr_target.isValidEncodedQuery(update_attempt_enc_query.toString())) {
+                throw new Error(gs.getMessage("Invalid encoded query: " + update_attempt_enc_query.toString()));
+            }
+            // Look for the record to update
+            gr_target.addEncodedQuery(update_attempt_enc_query);
+            gr_target.setLimit(1);
+            gr_target.query();
+            if (!gr_target.next() || !gr_target.isValidRecord()) {
+                // We couldn't find a record to update
+                var no_update_rec_msg = "Could not find existing record to update with query: " + update_attempt_enc_query;
+                if (!insert_if_update_rec_not_found) {
+                    // We're not going to insert on update failure, so bail
+                    no_update_rec_msg += "\nAborting process.";
+                    this.LOCAL_LOGGER.logError(no_update_rec_msg);
+                    return "";
+                }
+                no_update_rec_msg += "\nAttempting to insert a new record instead...";
+                attempt_update_flag = false; // This lets us know to insert instead of update
+            }
+        }
+
+        // If we're explicitly inserting, or if the update attempt failed but we're inserting anyway, then create a new record
+        if (!attempt_update_flag) {
+            gr_target.newRecord();
+        }
+
+        // Iterate through the target properties and set them accordingly
+        for (var p in target_properties_obj) {
+            var prop = target_properties_obj[p];
+
+            // Validate that the field exists, move on to the next if not
+            if (!gr_target.isValidField(prop.field)) {
+                gs.warn(gs.getMessage("Field '" + prop.field + "' is invalid, continuing to attempt the remaining fields..."));
+                continue;
+            }
+
+            var value_to_set = prop.value;
+
+            // Handle reference fields
+            var is_reference = prop.reference.is_reference;
+
+            var ref_table = prop.reference.referenced_table;
+
+            var look_up_field = prop.reference.look_up_field;
+
+            if (is_reference && ref_table && look_up_field) {
+                // If we have a reference field and the required metadata,
+                // then try to get the record based on the look up field and
+                // if one is found, then set the value to the referenced record's sys_id.
+                // If one is not found, then the field is skipped.
+                var gr_ref = new GlideRecord(ref_table);
+                gr_ref.addQuery(look_up_field, value_to_set);
+                gr_ref.setLimit(1);
+                gr_ref.query();
+                if (gr_ref.next() && gr_ref.isValidRecord()) {
+                    value_to_set = gr_ref.getUniqueValue();
+                } else {
+                    gs.warn(gs.getMessage("Reference not found in the '" + ref_table + "' table where " + look_up_field + " = " + value_to_set + ". Continuing to the next field..."));
+                    continue;
+                }
+            } else if (attempt_update_flag && prop.append_to_existing_value) {
+                // If we're trying an update and we want to append to the existing value, then do so
+                value_to_set = gr_target.getValue(prop.field) + prop.value.toString();
+            } else {
+                // Not a reference and not appending, so just set the value as provided
+                value_to_set = prop.value;
+            }
+
+            gr_target.setValue(prop.field, value_to_set);
+        }
+
+
+        var result_sys_id = ""; // The sys_id of the new or updated record
+        if (attempt_update_flag) {
+            result_sys_id = gr_target.update();
+            if (!result_sys_id) {
+                throw new Error(gs.getMessage("Update failed for record with sys_id: " + gr_target.getUniqueValue() + " Attempted target properties:\n" + JSON.stringify(target_properties_obj, null, 2)));
+            }
+        } else {
+            result_sys_id = gr_target.insert();
+            if (!result_sys_id) {
+                throw new Error(gs.getMessage("Incident insert failed. Attempted target properties:\n" + JSON.stringify(target_properties_obj, null, 2)));
+            }
+        }
+        return result_sys_id;
+    },
+
+    /**SNDOC
+		@name validateCreateOrUpdateRecordFromObjectInputs
+		@description (WIP) Validates the inputs for createOrUpdateRecordFromObject(). 
+Current state: Checks that table is a valid table and that target_properties_obj is a non-nil Array.
+		@param {String} [table] - A valid SN table name.
+		@param {Array of objects} [target_properties_obj] - An array of target properties objects.
+[{
+    "field": // {String} The field to set.
+    "value": // {Any} The value to which the field will be set. If field is a reference, then this will be used for the reference lookup.
+    "append_to_existing_value": // {Boolean} True to append to the existing value, false to replace. No effect if reference.is_reference is true.
+    "reference": {
+        "is_reference": // {Boolean} True if the field is of type reference, false otherwise.
+        "look_up_field": {String} The field on the referenced table whose value should match the above value. No effect if reference.is_reference is true.
+        "referenced_table": {String} The referenced table's name. No effect if reference.is_reference is true.
+    }
+}]
+		@param {Boolean} [attempt_update] - True to try and find a record matching update_attempt_enc_query and update it, false to only insert.
+		@param {Boolean} [insert_if_update_rec_not_found] - True to insert a record if attempt_update is true and a record couldn't be found, false to abort the process with no record updates or inserts.
+		@param {String} [update_attempt_enc_query] - A GlideRecord encoded query to find a record to update (if updating). No effect if attempt_update is false.
+		@example
+		// Update an existing incident's assignment group
+		var table = "incidant";	// Intentionally invalid table name
+		var target_properties_obj = [{
+			"field": "assignment_group",
+			"value": "A valid user group name",
+			"append_to_existing_value": false,
+			"reference": {
+				"is_reference": true,
+				"look_up_field": "name",
+				"referenced_table": "sys_user_group"
+			}
+		}];
+		var attempt_update = true;
+		var insert_if_update_rec_not_found = true;
+		var update_attempt_enc_query = "active=true^number=INC12345678";
+		var ObjUtils = new global.ObjectManager();
+		var validation_results = ObjUtils.validateCreateOrUpdateRecordFromObjectInputs(table, target_properties_obj, attempt_update, insert_if_update_rec_not_found, update_attempt_enc_query);
+		if (validation_results.length > 0) {
+			gs.error("Inputs failed validation. Error message: " + validation_results);
+			// Provided table name does not exist. Input: incidant
+		} else {
+			gs.info("Success!");
+		}
+		@returns {String} An empty array on success, or an array of error message strings on failure. If target_properties_obj is nil or not an Array, then this outputs a help message.
+		*/
+    validateCreateOrUpdateRecordFromObjectInputs: function(table, target_properties_obj, attempt_update, insert_if_update_rec_not_found, update_attempt_enc_query) {
+        var results = [];
+        if (gs.nil(table) || typeof table !== "string") {
+            results.push("No table name provided.");
+        }
+
+        if (!gs.tableExists(table)) {
+            results.push("Provided table name does not exist. Input: " + table);
+        }
+
+        if (gs.nil(target_properties_obj) || Array.isArray(target_properties_obj) !== true) {
+            var msg = 'Target properties must be an array of objects:';
+            msg += '\n[{\n\t"field": // {String}';
+            msg += '\n\t"value": // {Any}';
+            msg += '\n\t"append_to_existing_value": // {Boolean}';
+            msg += '\n\t"reference": {';
+            msg += '\n\t\t"is_reference": // {Boolean}';
+            msg += '\n\t\t"look_up_field": {String}';
+            msg += '\n\t\t"referenced_table": {String} Must be a valid table name if is_reference is true\n\t}\n}]';
+            results.push(msg);
+        }
+        return results;
+    },
+
+    type: 'ObjectManager'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-07-18 23:30:37</sys_created_on>
+        <sys_id>764e708e47f22210c71d8f59e16d43bd</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_name>ObjectManager</sys_name>
+        <sys_package display_value="CodeVault" source="x_648117_codevault">f41ce2a553b21210829a70c0a0490efc</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="CodeVault">f41ce2a553b21210829a70c0a0490efc</sys_scope>
+        <sys_update_name>sys_script_include_764e708e47f22210c71d8f59e16d43bd</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-07-18 23:33:31</sys_updated_on>
+    </sys_script_include>
+</record_update>
