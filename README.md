@@ -15,10 +15,13 @@ CONSTANTS - Private application constants
 The follow classes (script includes) are on the backlog for development</br>
 ArrayHandler</br>
 ChronoManager</br>
-JsonHandler</br>
 StringHandler</br>
 OrderHierarchy</br>
 
-The following classes (script includes) are on the backlog for testing</br>
+The following classes (script includes) are on the backlog for further development/testing</br>
 GlideService (Courtesy of Mr. David Arbour)</br>
 ObjectManager (Courtesy of Mr. Tim Bremm)</br>
+StringHandler</br>
+DatabaseHelper & TypeChecker</br></br>
+
+In the backlog is to enable comments for SNDocs and to develop a class for working with ServiceNow encoded queries.
